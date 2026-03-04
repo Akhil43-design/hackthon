@@ -67,28 +67,35 @@ function renderInternships(internships) {
         return;
     }
 
-    internshipContainer.innerHTML = internships.map(intern => `
-        <div class="flex-none w-[320px] bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 hover:border-primary/50 transition-all cursor-pointer snap-center group"
-             onclick="window.location.href='details.html?data=${encodeURIComponent(JSON.stringify(intern))}'">
-            <div class="flex items-start justify-between mb-8">
-                <div class="size-16 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center p-3 shadow-inner">
-                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(intern.company)}&background=random" class="w-full h-full object-contain">
+    internshipContainer.innerHTML = internships.map(intern => {
+        const logoUrl = `https://logo.clearbit.com/${intern.company.split(' ')[0].toLowerCase().replace(/[^a-z0-z]/g, '')}.com`;
+        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(intern.company)}&background=random&color=fff`;
+
+        return `
+            <div class="flex-none w-[320px] bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 hover:border-primary/50 transition-all cursor-pointer snap-center group"
+                 onclick="window.location.href='details.html?data=${encodeURIComponent(JSON.stringify(intern))}'">
+                <div class="flex items-start justify-between mb-8">
+                    <div class="size-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center p-2 shadow-sm border border-slate-50 dark:border-slate-700">
+                        <img src="${logoUrl}" 
+                             onerror="this.src='${fallbackUrl}'" 
+                             class="w-full h-full object-contain rounded-xl">
+                    </div>
+                    <div class="flex flex-col gap-2 items-end">
+                        <span class="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-[10px] font-bold rounded-full uppercase tracking-wider">Paid</span>
+                        <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase tracking-wider">${intern.location === 'Remote' ? 'Remote' : 'On-site'}</span>
+                    </div>
                 </div>
-                <div class="flex flex-col gap-2 items-end">
-                    <span class="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-[10px] font-bold rounded-full uppercase tracking-wider">Paid</span>
-                    <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase tracking-wider">${intern.location === 'Remote' ? 'Remote' : 'On-site'}</span>
+                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 leading-tight">${intern.title}</h3>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mb-8 font-medium">${intern.company} • ${intern.location}</p>
+                <div class="flex items-center justify-between mt-auto">
+                    <span class="text-xs font-semibold text-slate-400">Posted Recently</span>
+                    <button class="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                        Apply Now <span class="material-symbols-outlined text-sm">open_in_new</span>
+                    </button>
                 </div>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 leading-tight">${intern.title}</h3>
-            <p class="text-sm text-slate-500 dark:text-slate-400 mb-8 font-medium">${intern.company} • ${intern.location}</p>
-            <div class="flex items-center justify-between mt-auto">
-                <span class="text-xs font-semibold text-slate-400">Posted Recently</span>
-                <button class="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
-                    Apply Now <span class="material-symbols-outlined text-sm">open_in_new</span>
-                </button>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // Filter and Search Logic
@@ -134,8 +141,9 @@ async function loadNews() {
         newsContainer.innerHTML = allNews.map(item => `
             <div class="group bg-white dark:bg-slate-900 rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 dark:border-slate-800 flex flex-col">
                 <div class="aspect-video w-full bg-slate-200 dark:bg-slate-800 overflow-hidden relative">
-                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(item.title)}&background=random&size=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    <img src="${item.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1000'}" 
+                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                 </div>
                 <div class="p-6 flex-1 flex flex-col">
                     <p class="text-[10px] font-bold text-primary mb-3 uppercase tracking-widest">Tech Update</p>

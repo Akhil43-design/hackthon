@@ -161,32 +161,38 @@ def get_news():
         {
             "title": "Generative AI: The 2024 Roadmap",
             "description": "Exploring how LLMs are reshaping the modern developer workflow and what to expect in the coming months.",
-            "link": "https://techcrunch.com/category/artificial-intelligence/"
+            "link": "https://techcrunch.com/category/artificial-intelligence/",
+            "image": "https://images.unsplash.com/photo-1674027444485-cec3da58eef4?auto=format&fit=crop&q=80&w=1000"
         },
         {
             "title": "Quantum Supremacy Near?",
             "description": "New breakthroughs in error correction bring us closer to practical quantum computing use cases in cryptography.",
-            "link": "https://www.wired.com/tag/quantum-computing/"
+            "link": "https://www.wired.com/tag/quantum-computing/",
+            "image": "https://images.unsplash.com/photo-1695634014410-db5c46f56822?auto=format&fit=crop&q=80&w=1000"
         },
         {
             "title": "The Hybrid Work Debate",
             "description": "Top tech firms are re-evaluating their remote work policies for 2025, sparking new discussions on productivity.",
-            "link": "https://www.theverge.com/tech"
+            "link": "https://www.theverge.com/tech",
+            "image": "https://images.unsplash.com/photo-1732998486450-d0f8e5951460?auto=format&fit=crop&q=80&w=1000"
         },
         {
             "title": "Technical Interview Tips",
             "description": "How to master system design interviews at FAANG companies using the latest architectural patterns.",
-            "link": "https://medium.com/tag/software-engineering"
+            "link": "https://medium.com/tag/software-engineering",
+            "image": "https://images.unsplash.com/photo-1710770563074-6d9cc0d3e338?auto=format&fit=crop&q=80&w=1000"
         },
         {
             "title": "Edge Computing Explosion",
             "description": "Why processing data at the edge is becoming critical for the next generation of smart IoT devices and cities.",
-            "link": "https://www.zdnet.com/topic/edge-computing/"
+            "link": "https://www.zdnet.com/topic/edge-computing/",
+            "image": "https://images.unsplash.com/photo-1695462131590-bdd41d1b21f1?auto=format&fit=crop&q=80&w=1000"
         },
         {
             "title": "Web3 & The Future of ID",
             "description": "Decentralized identity solutions are gaining traction as users demand more control over their personal data.",
-            "link": "https://cointelegraph.com/tags/web3"
+            "link": "https://cointelegraph.com/tags/web3",
+            "image": "https://images.unsplash.com/photo-1660836814985-8523a0d713b5?auto=format&fit=crop&q=80&w=1000"
         }
     ]
     return jsonify(news)
