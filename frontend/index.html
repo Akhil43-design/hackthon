@@ -60,7 +60,38 @@
     </nav>
 
     <!-- Main Content Area -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        <!-- Search & Filter Section -->
+        <section class="space-y-6">
+            <div class="relative max-w-2xl mx-auto">
+                <span
+                    class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                <input type="text" id="searchInput" placeholder="Search by role, company, or skills..."
+                    class="w-full h-14 pl-12 pr-4 rounded-2xl border-none bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-none focus:ring-2 focus:ring-primary transition-all text-slate-700 dark:text-slate-200">
+            </div>
+
+            <div class="flex items-center justify-center gap-2 overflow-x-auto hide-scrollbar py-2">
+                <button
+                    class="filter-btn active px-6 py-2.5 rounded-full bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 whitespace-nowrap"
+                    data-domain="all">All</button>
+                <button
+                    class="filter-btn px-6 py-2.5 rounded-full bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm font-bold border border-slate-100 dark:border-slate-800 hover:border-primary transition-all whitespace-nowrap"
+                    data-domain="Software">Software</button>
+                <button
+                    class="filter-btn px-6 py-2.5 rounded-full bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm font-bold border border-slate-100 dark:border-slate-800 hover:border-primary transition-all whitespace-nowrap"
+                    data-domain="AI">AI/ML</button>
+                <button
+                    class="filter-btn px-6 py-2.5 rounded-full bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm font-bold border border-slate-100 dark:border-slate-800 hover:border-primary transition-all whitespace-nowrap"
+                    data-domain="Design">Design</button>
+                <button
+                    class="filter-btn px-6 py-2.5 rounded-full bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm font-bold border border-slate-100 dark:border-slate-800 hover:border-primary transition-all whitespace-nowrap"
+                    data-domain="Web">Frontend</button>
+                <button
+                    class="filter-btn px-6 py-2.5 rounded-full bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm font-bold border border-slate-100 dark:border-slate-800 hover:border-primary transition-all whitespace-nowrap"
+                    data-domain="Cloud">Cloud</button>
+            </div>
+        </section>
+
         <!-- Latest Tech News Section -->
         <section>
             <div class="flex items-center justify-between mb-8">
@@ -111,15 +142,18 @@
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
                 <span class="text-[10px] font-bold">Home</span>
             </a>
-            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                href="index.html">
                 <span class="material-symbols-outlined">work</span>
                 <span class="text-[10px] font-bold">Internships</span>
             </a>
-            <a class="flex flex-col items-center gap-1 text-slate-400" href="bookmarks.html">
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                href="bookmarks.html">
                 <span class="material-symbols-outlined">bookmark</span>
                 <span class="text-[10px] font-bold">Saved</span>
             </a>
-            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                href="login.html">
                 <span class="material-symbols-outlined">person</span>
                 <span class="text-[10px] font-bold">Profile</span>
             </a>

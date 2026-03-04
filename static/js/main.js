@@ -8,9 +8,14 @@ const API_URL = "https://intern-hub-orcin.vercel.app/api";
 const internshipContainer = document.getElementById('internshipContainer');
 const newsContainer = document.getElementById('newsContainer');
 const authBtn = document.getElementById('authBtn');
+const searchInput = document.getElementById('searchInput');
+const filterBtns = document.querySelectorAll('.filter-btn');
 
 // Initialize State
 let currentUser = null;
+let allInternships = [];
+let allNews = [];
+let currentFilter = 'all';
 
 // Auth State Listener
 onAuthStateChanged(auth, async (user) => {
@@ -29,49 +34,104 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-// Load All Internships
-async function loadInternships() {
-    if (!internshipContainer) return;
-    try {
-        const response = await fetch(`${API_URL}/internships`);
-        const internships = await response.json();
-
-        internshipContainer.innerHTML = internships.map(intern => `
-            <div class="flex-none w-[320px] bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 hover:border-primary/50 transition-all cursor-pointer snap-center group"
-                 onclick="window.location.href='details.html?data=${encodeURIComponent(JSON.stringify(intern))}'">
-                <div class="flex items-start justify-between mb-8">
-                    <div class="size-16 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center p-3 shadow-inner">
-                        <img src="https://ui-avatars.com/api/?name=${intern.company}&background=random" class="w-full h-full object-contain">
-                    </div>
-                    <div class="flex flex-col gap-2 items-end">
-                        <span class="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-[10px] font-bold rounded-full uppercase tracking-wider">Paid</span>
-                        <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase tracking-wider">${intern.location === 'Remote' ? 'Remote' : 'On-site'}</span>
-                    </div>
-                </div>
-                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 leading-tight">${intern.title}</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mb-8 font-medium">${intern.company} • ${intern.location}</p>
-                <div class="flex items-center justify-between mt-auto">
-                    <span class="text-xs font-semibold text-slate-400">Posted 2d ago</span>
-                    <button class="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
-                        Apply Now <span class="material-symbols-outlined text-sm">open_in_new</span>
-                    </button>
+// Skeleton Loader HTML
+const getSkeletonHTML = (count = 4) => {
+    return Array(count).fill(0).map(() => `
+        <div class="flex-none w-[320px] bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-slate-100 dark:border-slate-800 animate-pulse">
+            <div class="flex items-start justify-between mb-8">
+                <div class="size-16 rounded-2xl bg-slate-100 dark:bg-slate-800"></div>
+                <div class="flex flex-col gap-2 items-end">
+                    <div class="h-4 w-12 bg-slate-100 dark:bg-slate-800 rounded-full"></div>
+                    <div class="h-4 w-16 bg-slate-100 dark:bg-slate-800 rounded-full"></div>
                 </div>
             </div>
-        `).join('');
+            <div class="h-6 w-3/4 bg-slate-100 dark:bg-slate-800 rounded-lg mb-4"></div>
+            <div class="h-4 w-1/2 bg-slate-100 dark:bg-slate-800 rounded-lg mb-8"></div>
+            <div class="flex justify-between items-center">
+                <div class="h-3 w-16 bg-slate-100 dark:bg-slate-800 rounded-lg"></div>
+                <div class="h-4 w-20 bg-slate-100 dark:bg-slate-800 rounded-lg"></div>
+            </div>
+        </div>
+    `).join('');
+};
+
+// Render Functions
+function renderInternships(internships) {
+    if (!internshipContainer) return;
+    if (internships.length === 0) {
+        internshipContainer.innerHTML = `
+            <div class="w-full py-12 text-center">
+                <p class="text-slate-400">No internships found matching your search.</p>
+                <button onclick="window.location.reload()" class="text-primary font-bold mt-2">Clear search</button>
+            </div>`;
+        return;
+    }
+
+    internshipContainer.innerHTML = internships.map(intern => `
+        <div class="flex-none w-[320px] bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 hover:border-primary/50 transition-all cursor-pointer snap-center group"
+             onclick="window.location.href='details.html?data=${encodeURIComponent(JSON.stringify(intern))}'">
+            <div class="flex items-start justify-between mb-8">
+                <div class="size-16 rounded-2xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center p-3 shadow-inner">
+                    <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(intern.company)}&background=random" class="w-full h-full object-contain">
+                </div>
+                <div class="flex flex-col gap-2 items-end">
+                    <span class="px-3 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-[10px] font-bold rounded-full uppercase tracking-wider">Paid</span>
+                    <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase tracking-wider">${intern.location === 'Remote' ? 'Remote' : 'On-site'}</span>
+                </div>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 leading-tight">${intern.title}</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-8 font-medium">${intern.company} • ${intern.location}</p>
+            <div class="flex items-center justify-between mt-auto">
+                <span class="text-xs font-semibold text-slate-400">Posted Recently</span>
+                <button class="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                    Apply Now <span class="material-symbols-outlined text-sm">open_in_new</span>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Filter and Search Logic
+function handleSearchAndFilter() {
+    const searchTerm = searchInput?.value.toLowerCase() || '';
+
+    const filtered = allInternships.filter(intern => {
+        const matchesSearch =
+            intern.title.toLowerCase().includes(searchTerm) ||
+            intern.company.toLowerCase().includes(searchTerm) ||
+            (intern.domain && intern.domain.toLowerCase().includes(searchTerm));
+
+        const matchesFilter = currentFilter === 'all' ||
+            (intern.domain && intern.domain.toLowerCase().includes(currentFilter.toLowerCase()));
+
+        return matchesSearch && matchesFilter;
+    });
+
+    renderInternships(filtered);
+}
+
+// Load Data
+async function loadInternships() {
+    if (!internshipContainer) return;
+    internshipContainer.innerHTML = getSkeletonHTML(4);
+
+    try {
+        const response = await fetch(`${API_URL}/internships`);
+        allInternships = await response.json();
+        renderInternships(allInternships);
     } catch (error) {
         console.error("Error loading internships:", error);
-        internshipContainer.innerHTML = '<p class="text-red-500 p-8">Failed to load internships.</p>';
+        internshipContainer.innerHTML = '<p class="text-red-500 p-8">Failed to load internships. Please try again.</p>';
     }
 }
 
-// Load News
 async function loadNews() {
     if (!newsContainer) return;
     try {
         const response = await fetch(`${API_URL}/news`);
-        const news = await response.json();
+        allNews = await response.json();
 
-        newsContainer.innerHTML = news.map(item => `
+        newsContainer.innerHTML = allNews.map(item => `
             <div class="group bg-white dark:bg-slate-900 rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 dark:border-slate-800 flex flex-col">
                 <div class="aspect-video w-full bg-slate-200 dark:bg-slate-800 overflow-hidden relative">
                     <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(item.title)}&background=random&size=400" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
@@ -91,6 +151,24 @@ async function loadNews() {
         console.error("Error loading news:", error);
     }
 }
+
+// Event Listeners
+searchInput?.addEventListener('input', handleSearchAndFilter);
+
+filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        filterBtns.forEach(b => {
+            b.classList.remove('bg-primary', 'text-white', 'shadow-lg', 'shadow-primary/20');
+            b.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-400', 'border');
+        });
+
+        btn.classList.add('bg-primary', 'text-white', 'shadow-lg', 'shadow-primary/20');
+        btn.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-600', 'dark:text-slate-400', 'border');
+
+        currentFilter = btn.dataset.domain;
+        handleSearchAndFilter();
+    });
+});
 
 // Bookmark Logic
 export async function toggleBookmark(internship) {
@@ -155,18 +233,12 @@ function initAutoScroll(container) {
 }
 
 // Global Initialization
-loadInternships().then(() => {
+async function init() {
+    await loadInternships();
+    await loadNews();
+
     const internContainer = document.getElementById('internshipContainer');
     if (internContainer) initAutoScroll(internContainer);
-});
+}
 
-loadNews().then(() => {
-    const nContainer = document.getElementById('newsContainer');
-    // For the news grid, we don't necessarily want auto-scroll if it's not a flex-row anymore.
-    // However, the requested index.html has news in a grid.
-    // If the grid becomes a carousel on mobile, we might want it.
-    // For now, I'll only enable it if it's a horizontal container.
-    if (nContainer && nContainer.classList.contains('overflow-x-auto')) {
-        initAutoScroll(nContainer);
-    }
-});
+init();
