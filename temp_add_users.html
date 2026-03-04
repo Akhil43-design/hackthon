@@ -18,7 +18,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD7vjsXWM3pLbl3hiY1V2djxZ-HZAZyf2s",
@@ -32,7 +32,12 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+
+        // Force long polling to bypass potential adblockers/network issues
+        const db = initializeFirestore(app, {
+            experimentalForceLongPolling: true
+        });
+
         const log = document.getElementById('log');
         const status = document.getElementById('status');
 
