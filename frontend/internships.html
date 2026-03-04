@@ -4,15 +4,17 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>InternHub Dashboard</title>
+    <title>Internship Board - InternAI</title>
     <link href="/static/css/tailwind.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-25..0"
         rel="stylesheet" />
     <style>
-        body {
-            min-height: max(884px, 100dvh);
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(43, 108, 238, 0.2);
         }
 
         .no-scrollbar::-webkit-scrollbar {
@@ -27,30 +29,25 @@
 </head>
 
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
-    <!-- Sticky Navigation Bar -->
     <nav
         class="sticky top-0 z-50 w-full bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <!-- Logo -->
-                <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.reload()">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
                     <span class="material-symbols-outlined text-primary text-3xl">bolt</span>
                     <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">InternAI</span>
                 </div>
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center gap-8">
-                    <a class="text-sm font-semibold text-primary" href="index.html">Home</a>
                     <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
-                        href="internships.html">Internships</a>
+                        href="index.html">Home</a>
+                    <a class="text-sm font-semibold text-primary" href="internships.html">Internships</a>
                     <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
                         href="news.html">Tech News</a>
                     <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
                         href="bookmarks.html">Saved</a>
                 </div>
-                <!-- Action Button -->
                 <div class="flex items-center gap-4">
-                    <a href="post-internship.html"
-                        class="hidden sm:block text-slate-600 dark:text-slate-400 font-bold text-sm">Post Internship</a>
                     <button id="authBtn"
                         class="bg-primary text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-primary/90 transition-all shadow-md shadow-primary/20">
                         Sign In
@@ -60,8 +57,14 @@
         </div>
     </nav>
 
-    <!-- Main Content Area -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        <!-- Header Section -->
+        <section class="text-center space-y-4">
+            <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">Internship Board</h1>
+            <p class="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Explore premium opportunities
+                curated just for you. Filter by domain or search to find your next career step.</p>
+        </section>
+
         <!-- Search & Filter Section -->
         <section class="space-y-6">
             <div class="relative max-w-2xl mx-auto">
@@ -71,9 +74,9 @@
                     class="w-full h-14 pl-12 pr-4 rounded-2xl border-none bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-none focus:ring-2 focus:ring-primary transition-all text-slate-700 dark:text-slate-200">
             </div>
 
-            <div class="flex items-center justify-center gap-2 overflow-x-auto hide-scrollbar py-2">
+            <div class="flex items-center justify-center gap-2 overflow-x-auto no-scrollbar py-2">
                 <button
-                    class="filter-btn active px-6 py-2.5 rounded-full bg-primary text-white text-sm font-bold shadow-lg shadow-primary/20 whitespace-nowrap"
+                    class="filter-btn active px-6 py-2.5 rounded-full bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm font-bold border border-slate-100 dark:border-slate-800 hover:border-primary transition-all whitespace-nowrap"
                     data-domain="all">All</button>
                 <button
                     class="filter-btn px-6 py-2.5 rounded-full bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm font-bold border border-slate-100 dark:border-slate-800 hover:border-primary transition-all whitespace-nowrap"
@@ -86,83 +89,49 @@
                     data-domain="Design">Design</button>
                 <button
                     class="filter-btn px-6 py-2.5 rounded-full bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm font-bold border border-slate-100 dark:border-slate-800 hover:border-primary transition-all whitespace-nowrap"
-                    data-domain="Web">Frontend</button>
+                    data-domain="Web">Web Dev</button>
                 <button
                     class="filter-btn px-6 py-2.5 rounded-full bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-sm font-bold border border-slate-100 dark:border-slate-800 hover:border-primary transition-all whitespace-nowrap"
-                    data-domain="Cloud">Cloud</button>
+                    data-domain="Marketing">Marketing</button>
             </div>
         </section>
 
-        <!-- Trending Internships Section -->
+        <!-- Listings Grid -->
         <section id="internshipsSection">
-            <div class="flex items-center justify-between mb-8">
-                <div>
-                    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Trending
-                        Internships</h2>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">AI-matched opportunities updated in
-                        real-time</p>
-                </div>
-                <a class="text-primary text-sm font-bold flex items-center gap-1 hover:underline"
-                    href="internships.html">
-                    View all <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                </a>
-            </div>
-            <div id="internshipContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Dynamic Internship Cards (Grid) -->
-            </div>
-        </section>
-
-        <!-- Latest Tech News Section -->
-        <section id="newsSection">
-            <div class="flex items-center justify-between mb-8">
-                <div>
-                    <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Tech Insights</h2>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Brief updates from the tech world</p>
-                </div>
-                <div class="flex gap-3">
-                    <button id="newsScrollLeft"
-                        class="size-10 flex items-center justify-center rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 transition-all shadow-sm">
-                        <span class="material-symbols-outlined">chevron_left</span>
-                    </button>
-                    <button id="newsScrollRight"
-                        class="size-10 flex items-center justify-center rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 transition-all shadow-sm">
-                        <span class="material-symbols-outlined">chevron_right</span>
-                    </button>
-                </div>
-            </div>
-            <div id="newsContainer" class="flex gap-6 overflow-x-auto no-scrollbar pb-8 snap-x snap-mandatory">
-                <!-- Dynamic News Cards (Horizontal Scroll) -->
+            <div id="internshipContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
+                <!-- Dynamic Content -->
             </div>
         </section>
     </main>
 
-    <!-- Mobile Navigation (Bottom Nav) -->
+    <!-- Mobile Navigation -->
     <div
         class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 md:hidden z-50 px-4 pb-safe pt-2 shadow-2xl">
         <div class="flex justify-around items-center h-16">
-            <a class="flex flex-col items-center gap-1 text-primary transition-all scale-110" href="index.html">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                href="index.html">
+                <span class="material-symbols-outlined">home</span>
                 <span class="text-[10px] font-bold">Home</span>
             </a>
-            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
-                href="internships.html">
-                <span class="material-symbols-outlined">work</span>
+            <a class="flex flex-col items-center gap-1 text-primary transition-all scale-110" href="internships.html">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">work</span>
                 <span class="text-[10px] font-bold">Internships</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                href="news.html">
+                <span class="material-symbols-outlined">article</span>
+                <span class="text-[10px] font-bold">News</span>
             </a>
             <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
                 href="bookmarks.html">
                 <span class="material-symbols-outlined">bookmark</span>
                 <span class="text-[10px] font-bold">Saved</span>
             </a>
-            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
-                href="login.html">
-                <span class="material-symbols-outlined">person</span>
-                <span class="text-[10px] font-bold">Profile</span>
-            </a>
         </div>
     </div>
 
-    <script type="module" src="/static/js/main.js"></script>
+    <!-- Re-use main.js for core logic -->
+    <script type="module" src="/static/js/main.js?v=3"></script>
 </body>
 
 </html>

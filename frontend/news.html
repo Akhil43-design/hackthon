@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tech Insights Board - InternAI</title>
+    <link href="/static/css/tailwind.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-25..0"
+        rel="stylesheet" />
+    <style>
+        .news-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .news-card:hover {
+            transform: translateY(-10px) scale(1.02);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+    <nav
+        class="sticky top-0 z-50 w-full bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                    <span class="material-symbols-outlined text-primary text-3xl">bolt</span>
+                    <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">InternAI</span>
+                </div>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                        href="index.html">Home</a>
+                    <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                        href="internships.html">Internships</a>
+                    <a class="text-sm font-semibold text-primary" href="news.html">Tech News</a>
+                    <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                        href="bookmarks.html">Saved</a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button id="authBtn"
+                        class="bg-primary text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-primary/90 transition-all shadow-md shadow-primary/20">
+                        Sign In
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        <!-- Header Section -->
+        <section class="text-center space-y-4 animate-fade-in">
+            <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">Tech Insights Board</h1>
+            <p class="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Stay ahead with the latest updates
+                from the technology world. Curated insights to keep you informed.</p>
+        </section>
+
+        <!-- News Grid Board -->
+        <section id="newsSection" class="pb-20">
+            <div id="newsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Dynamic Content -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Mobile Navigation -->
+    <div
+        class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 md:hidden z-50 px-4 pb-safe pt-2 shadow-2xl">
+        <div class="flex justify-around items-center h-16">
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                href="index.html">
+                <span class="material-symbols-outlined">home</span>
+                <span class="text-[10px] font-bold">Home</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                href="internships.html">
+                <span class="material-symbols-outlined">work</span>
+                <span class="text-[10px] font-bold">Internships</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-primary transition-all scale-110" href="news.html">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">article</span>
+                <span class="text-[10px] font-bold">News</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                href="bookmarks.html">
+                <span class="material-symbols-outlined">bookmark</span>
+                <span class="text-[10px] font-bold">Saved</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Script for News Logic -->
+    <script type="module">
+        import { db } from "/firebase_config/config.js?v=3";
+        const API_URL = "https://intern-hub-orcin.vercel.app/api";
+
+        async function loadNews() {
+            const container = document.getElementById('newsContainer');
+            if (!container) return;
+
+            try {
+                const response = await fetch(`${API_URL}/news`);
+                const newsItems = await response.json();
+
+                container.innerHTML = newsItems.map((item, index) => `
+                    <div class="news-card group bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl transition-all border border-slate-100 dark:border-slate-800 flex flex-col h-full animate-fade-in" style="animation-delay: ${index * 0.1}s">
+                        <div class="aspect-video w-full bg-slate-200 dark:bg-slate-800 overflow-hidden relative">
+                            <img src="${item.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1000'}" 
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                            <span class="absolute bottom-4 left-6 px-3 py-1 bg-primary text-white text-[10px] font-bold rounded-full uppercase tracking-widest">Trending</span>
+                        </div>
+                        <div class="p-8 flex-1 flex flex-col">
+                            <h3 class="text-xl font-extrabold leading-tight text-slate-900 dark:text-white mb-4 group-hover:text-primary transition-colors">${item.title}</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-8 flex-1">${item.description}</p>
+                            <a href="${item.link}" target="_blank" class="w-fit flex items-center gap-2 text-primary font-bold text-sm uppercase tracking-wider group-hover:gap-3 transition-all">
+                                Read Article <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            </a>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error("Error loading news:", error);
+                container.innerHTML = '<p class="text-red-500 text-center col-span-full py-20">Failed to load tech insights.</p>';
+            }
+        }
+
+        // Shared Auth/Session logic (simplified)
+        const authBtn = document.getElementById('authBtn');
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+            authBtn.innerText = "Sign Out";
+            authBtn.onclick = () => {
+                localStorage.removeItem('user');
+                window.location.reload();
+            };
+        } else {
+            authBtn.innerText = "Sign In";
+            authBtn.onclick = () => window.location.href = 'login.html';
+        }
+
+        loadNews();
+    </script>
+</body>
+
+</html>

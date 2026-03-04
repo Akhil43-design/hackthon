@@ -134,7 +134,10 @@ function handleSearchAndFilter() {
 // Load Data
 async function loadInternships() {
     if (!internshipContainer) return;
-    internshipContainer.innerHTML = getSkeletonHTML(4);
+
+    // Use more skeletons for the dedicated board
+    const skeletonCount = window.location.pathname.includes('internships.html') ? 6 : 4;
+    internshipContainer.innerHTML = getSkeletonHTML(skeletonCount);
 
     try {
         const response = await fetch(`${API_URL}/internships`);
@@ -142,7 +145,7 @@ async function loadInternships() {
         renderInternships(allInternships);
     } catch (error) {
         console.error("Error loading internships:", error);
-        internshipContainer.innerHTML = '<p class="text-red-500 p-8">Failed to load internships. Please try again.</p>';
+        internshipContainer.innerHTML = '<p class="text-red-500 p-8 col-span-full text-center">Failed to load internships. Please try again.</p>';
     }
 }
 

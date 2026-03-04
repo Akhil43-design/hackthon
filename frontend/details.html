@@ -19,23 +19,29 @@
 <body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
     <div
         class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden">
-        <!-- Header -->
-        <div
-            class="sticky top-0 z-50 flex items-center bg-white/80 dark:bg-background-dark/80 backdrop-blur-md p-4 justify-between border-b border-slate-200 dark:border-slate-800">
-            <div onclick="window.history.back()"
-                class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
-                <span class="material-symbols-outlined">arrow_back</span>
+        <nav
+            class="sticky top-0 z-50 w-full bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                        <span class="material-symbols-outlined text-primary text-3xl">bolt</span>
+                        <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">InternAI</span>
+                    </div>
+                    <!-- Desktop Menu -->
+                    <div class="hidden md:flex items-center gap-8">
+                        <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                            href="index.html">Home</a>
+                        <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                            href="internships.html">Internships</a>
+                        <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                            href="news.html">Tech News</a>
+                        <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                            href="bookmarks.html">Saved</a>
+                    </div>
+                    <div class="w-10"></div>
+                </div>
             </div>
-            <h2
-                class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">
-                Internship Details</h2>
-            <div class="flex w-10 items-center justify-end">
-                <button
-                    class="flex items-center justify-center rounded-full h-10 w-10 bg-transparent text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <span class="material-symbols-outlined">share</span>
-                </button>
-            </div>
-        </div>
+        </nav>
 
         <div id="detailsContainer">
             <!-- Dynamic Content Loaded Here -->

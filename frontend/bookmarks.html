@@ -13,48 +13,69 @@
 </head>
 
 <body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
-    <div
-        class="relative flex min-h-screen w-full flex-col max-w-[1000px] mx-auto bg-background-light dark:bg-background-dark shadow-2xl">
-        <header
-            class="sticky top-0 z-50 flex items-center bg-white/80 dark:bg-background-dark/80 backdrop-blur-md p-4 justify-between border-b border-slate-200 dark:border-slate-800">
-            <div onclick="window.history.back()"
-                class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
-                <span class="material-symbols-outlined">arrow_back</span>
+    <nav
+        class="sticky top-0 z-50 w-full bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.href='index.html'">
+                    <span class="material-symbols-outlined text-primary text-3xl">bolt</span>
+                    <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">InternAI</span>
+                </div>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                        href="index.html">Home</a>
+                    <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                        href="internships.html">Internships</a>
+                    <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                        href="news.html">Tech News</a>
+                    <a class="text-sm font-semibold text-primary" href="bookmarks.html">Saved</a>
+                </div>
+                <div class="w-10 md:hidden"></div>
             </div>
-            <h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold flex-1 text-center">Saved Internships</h2>
-            <div class="w-10"></div>
-        </header>
+        </div>
+    </nav>
 
-        <main class="flex-1 p-4">
-            <div id="savedContainer" class="space-y-4">
-                <p class="text-center p-10 text-slate-500">Loading your bookmarks...</p>
-            </div>
-        </main>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        <!-- Header Section -->
+        <section class="text-center space-y-4">
+            <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">Saved Board</h1>
+            <p class="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Access all your bookmarked
+                opportunities in one place. Your career interests, organized.</p>
+        </section>
 
-        <nav
-            class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 z-50 px-4 pb-safe pt-2 shadow-2xl">
-            <div class="flex justify-around items-center h-16">
-                <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
-                    href="index.html">
-                    <span class="material-symbols-outlined">home</span>
-                    <span class="text-[10px] font-bold">Home</span>
-                </a>
-                <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
-                    href="index.html">
-                    <span class="material-symbols-outlined">work</span>
-                    <span class="text-[10px] font-bold">Internships</span>
-                </a>
-                <a class="flex flex-col items-center gap-1 text-primary transition-all scale-110" href="bookmarks.html">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bookmark</span>
-                    <span class="text-[10px] font-bold">Saved</span>
-                </a>
-                <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
-                    href="login.html">
-                    <span class="material-symbols-outlined">person</span>
-                    <span class="text-[10px] font-bold">Profile</span>
-                </a>
+        <!-- Saved Listings Board -->
+        <section id="savedSection" class="pb-20">
+            <div id="savedContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <p class="text-center p-10 text-slate-500 col-span-full">Loading your bookmarks...</p>
             </div>
-        </nav>
+        </section>
+    </main>
+
+    <nav
+        class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 z-50 px-4 pb-safe pt-2 shadow-2xl">
+        <div class="flex justify-around items-center h-16">
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                href="index.html">
+                <span class="material-symbols-outlined">home</span>
+                <span class="text-[10px] font-bold">Home</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                href="index.html">
+                <span class="material-symbols-outlined">work</span>
+                <span class="text-[10px] font-bold">Internships</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-primary transition-all scale-110" href="bookmarks.html">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+                <span class="text-[10px] font-bold">Saved</span>
+            </a>
+            <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                href="login.html">
+                <span class="material-symbols-outlined">person</span>
+                <span class="text-[10px] font-bold">Profile</span>
+            </a>
+        </div>
+    </nav>
     </div>
 
     <script type="module">
@@ -88,20 +109,40 @@
 
                     container.innerHTML = querySnapshot.docs.map(doc => {
                         const intern = doc.data();
+                        const companyMap = {
+                            'google': 'google.com',
+                            'microsoft': 'microsoft.com',
+                            'amazon': 'amazon.com',
+                            'apple': 'apple.com',
+                            'meta': 'meta.com',
+                            'netflix': 'netflix.com'
+                        };
+                        const domain = companyMap[intern.company.toLowerCase()] || `${intern.company.split(' ')[0].toLowerCase().replace(/[^a-z0-z]/g, '')}.com`;
+                        const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+                        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(intern.company)}&background=random&color=fff`;
+
                         return `
-                            <div class="flex items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-primary transition-all cursor-pointer" 
-                                 onclick="window.location.href='details.html?data=${encodeURIComponent(JSON.stringify(intern))}'">
-                                <div class="size-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
-                                    <img src="https://ui-avatars.com/api/?name=${intern.company}&background=random" class="w-8 h-8 object-contain">
+                        <div class="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 hover:border-primary/50 hover:shadow-xl transition-all cursor-pointer group flex flex-col h-full"
+                             onclick="window.location.href='details.html?data=${encodeURIComponent(JSON.stringify(intern))}'">
+                            <div class="flex items-start justify-between mb-8">
+                                <div class="size-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center p-2 shadow-sm border border-slate-50 dark:border-slate-700">
+                                    <img src="${logoUrl}" 
+                                         onerror="this.src='${fallbackUrl}'" 
+                                         class="w-full h-full object-contain rounded-xl">
                                 </div>
-                                <div class="flex-1">
-                                    <h4 class="text-slate-900 dark:text-slate-100 font-bold text-sm uppercase">${intern.title}</h4>
-                                    <p class="text-slate-500 dark:text-slate-400 text-xs">${intern.company} • ${intern.location}</p>
-                                </div>
-                                <div class="text-right">
-                                    <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+                                <div class="flex flex-col gap-2 items-end">
+                                    <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-bold rounded-full uppercase tracking-wider">Saved</span>
                                 </div>
                             </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 leading-tight">${intern.title}</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-8 font-medium">${intern.company} • ${intern.location}</p>
+                            <div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-50 dark:border-slate-800">
+                                <span class="text-xs font-semibold text-slate-400">View Details</span>
+                                <button class="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
+                                    Apply Now <span class="material-symbols-outlined text-sm">open_in_new</span>
+                                </button>
+                            </div>
+                        </div>
                         `;
                     }).join('');
                 } catch (error) {
