@@ -1,22 +1,29 @@
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-import os
+from backend.services import api_source1, api_source2
 import firebase_admin
 from firebase_admin import credentials, firestore
 
 # Initialize Firebase Admin
 try:
     if not firebase_admin._apps:
-        # Check if service account file exists to avoid crash
-        cert_path = 'firebase_config/serviceAccountKey.json'
-        if os.path.exists(cert_path):
+        # Check multiple possible paths for the service account key
+        paths_to_try = [
+            'backend/firebase_config/serviceAccountKey.json',
+            'firebase_config/serviceAccountKey.json',
+            'serviceAccountKey.json'
+        ]
+        cert_path = None
+        for p in paths_to_try:
+            if os.path.exists(p):
+                cert_path = p
+                break
+                
+        if cert_path:
             cred = credentials.Certificate(cert_path)
             firebase_admin.initialize_app(cred)
             db = firestore.client()
-            print("Firestore initialized successfully.")
+            print(f"Firestore initialized successfully from {cert_path}")
         else:
-            print(f"Warning: {cert_path} not found. Using default app or skipping Firestore.")
-            # Try initializing with default credentials if available (e.g. on GCP/Vercel)
+            print("Warning: Service account key not found. Using default app or skipping Firestore.")
             try:
                 firebase_admin.initialize_app()
                 db = firestore.client()
@@ -28,6 +35,15 @@ except Exception as e:
 
 app = Flask(__name__)
 CORS(app)
+
+# Global Error Handler to return JSON instead of HTML
+@app.errorhandler(Exception)
+def handle_exception(e):
+    return jsonify({
+        "error": str(e),
+        "type": type(e).__name__,
+        "message": "Internal Server Error"
+    }), 500
 
 @app.route('/')
 def health_check():
