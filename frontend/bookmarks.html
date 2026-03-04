@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Saved Internships - InternHub</title>
     <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 
 <body style="overflow-y: auto;">
@@ -18,52 +21,75 @@
             </ul>
         </nav>
         <div class="auth-actions">
-            <button class="auth-btn">John Doe</button>
+            <!-- Auth state managed by JS -->
         </div>
     </header>
 
     <main style="display: block; padding: 4rem 10%;">
-        <h2 style="margin-bottom: 2rem;">Your Saved Internships</h2>
+        <h2 style="margin-bottom: 2rem;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 0.5rem;">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Your Saved Internships
+        </h2>
         <div id="bookmarksContainer"
             style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
-            <!-- Bookmarked items will be loaded here -->
-            <p style="color: var(--secondary);">You haven't saved any internships yet.</p>
+            <p style="color: var(--secondary);">Loading bookmarks...</p>
         </div>
     </main>
 
-    <script src="../static/js/main.js"></script>
-    <script>
-        // Specific logic for bookmarks page
-        async function loadBookmarks() {
-            const container = document.getElementById('bookmarksContainer');
-            try {
-                // This would normally fetch from /api/bookmarks
-                // For now, we mock the visualization
-                const mockBookmarks = [
-                    {
-                        "title": "Backend Intern",
-                        "company": "AI Solutions",
-                        "location": "San Francisco",
-                        "domain": "Engineering",
-                        "deadline": "2026-05-01",
-                        "apply_link": "#",
-                        "source": "Source 1"
-                    }
-                ];
+    <script type="module">
+        import { auth, db } from "../firebase_config/config.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-                if (mockBookmarks.length > 0) {
-                    container.innerHTML = '';
-                    mockBookmarks.forEach(intern => {
-                        container.innerHTML += createInternshipCard(intern);
-                    });
+        const container = document.getElementById('bookmarksContainer');
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                loadBookmarks(user.uid);
+            } else {
+                container.innerHTML = '<p style="color: var(--secondary);">Please <a href="login.html" style="color: var(--primary);">sign in</a> to view your bookmarks.</p>';
+            }
+        });
+
+        async function loadBookmarks(uid) {
+            try {
+                const q = query(collection(db, "bookmarks"), where("user_id", "==", uid));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    container.innerHTML = '<p style="color: var(--secondary);">You haven\'t saved any internships yet.</p>';
+                    return;
                 }
+
+                container.innerHTML = '';
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data().internship_data;
+                    container.innerHTML += createInternshipCard(data);
+                });
             } catch (error) {
-                console.error('Error loading bookmarks:', error);
+                console.error("Error loading bookmarks:", error);
+                container.innerHTML = '<p style="color: var(--danger);">Error loading bookmarks.</p>';
             }
         }
 
-        // Overriding the default load since this is bookmarks.html
-        document.addEventListener('DOMContentLoaded', loadBookmarks);
+        function createInternshipCard(intern) {
+            return `
+                <div class="card internship-card">
+                    <h3>${intern.title}</h3>
+                    <span class="company-name">${intern.company}</span>
+                    <div class="meta-info" style="margin-top: 1rem;">
+                        <span>📍 ${intern.location}</span>
+                        <span>💼 ${intern.domain}</span>
+                    </div>
+                    <div style="margin-top: 1.5rem; text-align: right;">
+                        <a href="${intern.apply_link}" class="apply-btn" target="_blank">Apply Now</a>
+                    </div>
+                </div>
+            `;
+        }
     </script>
 </body>
 
