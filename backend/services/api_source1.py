@@ -4,52 +4,61 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_SOURCE_1_URL = os.getenv("API_SOURCE_1_URL", "https://api.example.com/source1")
-API_KEY = os.getenv("API_SOURCE_1_KEY", "AIzaSyDlC6Kr5vpC61Ci9R82Ymy6kzYj87OhSgM")
+# Adzuna API Credentials (Placeholder - needs real ones from user)
+ADZUNA_APP_ID = os.getenv("ADZUNA_APP_ID", "ad61b1b4") # Placeholder ID
+ADZUNA_APP_KEY = os.getenv("ADZUNA_APP_KEY", "7d35443e6a2b8969415c911b306b5f48") # Placeholder Key
 
 def fetch_internships():
     """
-    Fetches internships from Source 1 and formats them.
-    This is called by the aggregated /api/internships route.
+    Fetches internships from Adzuna API and formats them.
     """
+    # Search parameters: internships in India (or worldwide)
+    url = f"https://api.adzuna.com/v1/api/jobs/in/search/1?app_id={ADZUNA_APP_ID}&app_key={ADZUNA_APP_KEY}&results_per_page=10&what=internship&content-type=application/json"
+    
     try:
-        # Actual fetch logic (placeholder until real URL is active)
-        # response = requests.get(API_SOURCE_1_URL, headers={"Authorization": f"Bearer {API_KEY}"})
-        # if response.status_code == 200:
-        #     data = response.json()
-        
-        # Mocking multiple results for API 1 to show immediate content
-        mock_data = [
-            {
-                "job_title": "Full Stack Intern",
-                "org": "Innovation Hub",
-                "city": "Remote",
-                "field": "Web Development",
-                "end_date": "2026-06-15",
-                "link": "https://example.com/hub1"
-            },
-            {
-                "job_title": "AI Research Intern",
-                "org": "Future AI",
-                "city": "Bangalore",
-                "field": "Artificial Intelligence",
-                "end_date": "2026-05-30",
-                "link": "https://example.com/ai1"
-            }
-        ]
-        
-        formatted_data = []
-        for item in mock_data:
-            formatted_data.append({
-                "title": item.get("job_title"),
-                "company": item.get("org"),
-                "location": item.get("city"),
-                "domain": item.get("field"),
-                "deadline": item.get("end_date"),
-                "apply_link": item.get("link"),
-                "source": "API Source 1"
-            })
-        return formatted_data
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            jobs = data.get('results', [])
+            
+            formatted_data = []
+            for job in jobs:
+                formatted_data.append({
+                    "title": job.get('title'),
+                    "company": job.get('company', {}).get('display_name', 'Unknown Company'),
+                    "location": job.get('location', {}).get('display_name', 'Remote'),
+                    "domain": job.get('category', {}).get('label', 'General'),
+                    "deadline": "Not Specified",
+                    "apply_link": job.get('redirect_url'),
+                    "source": "Adzuna"
+                })
+            return formatted_data
+        else:
+            print(f"Adzuna API Error: {response.status_code}")
+            return get_mock_data()
     except Exception as e:
-        print(f"Error fetching from API Source 1: {e}")
-        return []
+        print(f"Error fetching from Adzuna: {e}")
+        return get_mock_data()
+
+def get_mock_data():
+    """Fallback mock data if API fails or credentials invalid"""
+    return [
+        {
+            "title": "Software Engineering Intern",
+            "company": "Tech Solutions Inc.",
+            "location": "Bangalore, India",
+            "domain": "IT / Software",
+            "deadline": "2026-05-01",
+            "apply_link": "https://example.com/apply1",
+            "source": "Mock API"
+        },
+        {
+            "title": "UX Design Intern",
+            "company": "Creative Agency",
+            "location": "Remote",
+            "domain": "Design",
+            "deadline": "2026-04-15",
+            "apply_link": "https://example.com/apply2",
+            "source": "Mock API"
+        }
+    ]
