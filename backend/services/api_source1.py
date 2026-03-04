@@ -53,6 +53,7 @@ def fetch_internships():
     try:
         response = model.generate_content(prompt)
         text = response.text.strip()
+        print(f"AI Bot Raw Response Length: {len(text)}")
         
         # Robust JSON cleaning
         if "```json" in text:
@@ -61,20 +62,27 @@ def fetch_internships():
             text = text.split("```")[1].split("```")[0].strip()
             
         internships = json.loads(text)
+        print(f"AI Bot Parsed {len(internships)} internships")
         
         # Validate and filter: Ensure links look like direct application forms
         final_list = []
         for item in internships:
             link = item.get('apply_link', '')
-            # Filter out general homepages and simple LinkedIn search links
-            # Direct form links are usually longer and specific
-            is_generic = len(link) < 40 or any(x in link.lower() for x in ['/careers', '/jobs', '?q=', 'search']) and not any(y in link.lower() for y in ['/apply', '/form', '/jobs/'])
             
-            if link and not "example.com" in link and not is_generic:
-                item['source'] = "AI Direct-Form Bot"
+            # More permissive validation: Must have a link, and shouldn't be a obvious placeholder
+            if link and "http" in link.lower() and "example.com" not in link.lower():
+                # Prefer direct links but allow some general ones if they look legit
+                # We'll just tag them but include them
+                item['source'] = "AI Direct-Link Bot"
                 final_list.append(item)
+            else:
+                print(f"Skipping invalid link for {item.get('title')}: {link}")
             
-        return final_list if final_list else get_mock_ai_data()
+        if not final_list:
+            print("No valid links found by AI. Using fallback data.")
+            return get_mock_ai_data()
+            
+        return final_list
     except Exception as e:
         print(f"Error fetching from AI API: {e}")
         return get_mock_ai_data()
