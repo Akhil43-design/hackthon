@@ -179,6 +179,39 @@ export async function isBookmarked(internship) {
     return docSnap.exists();
 }
 
+// Auto-Scroll Logic
+function initAutoScroll(container) {
+    let scrollInterval;
+    let isPaused = false;
+
+    const startScrolling = () => {
+        scrollInterval = setInterval(() => {
+            if (isPaused) return;
+
+            const maxScroll = container.scrollWidth - container.clientWidth;
+            if (container.scrollLeft >= maxScroll - 1) {
+                container.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                container.scrollBy({ left: 300, behavior: 'smooth' });
+            }
+        }, 4000);
+    };
+
+    container.addEventListener('mouseenter', () => isPaused = true);
+    container.addEventListener('mouseleave', () => isPaused = false);
+    container.addEventListener('touchstart', () => isPaused = true);
+    container.addEventListener('touchend', () => isPaused = false);
+
+    startScrolling();
+}
+
 // Global Initialization
-loadInternships();
-loadNews();
+loadInternships().then(() => {
+    const internContainer = document.getElementById('internshipContainer');
+    if (internContainer) initAutoScroll(internContainer);
+});
+
+loadNews().then(() => {
+    const newsContainer = document.getElementById('newsContainer');
+    if (newsContainer) initAutoScroll(newsContainer);
+});
