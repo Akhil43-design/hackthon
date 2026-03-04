@@ -5,15 +5,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Configure the AI API
-API_KEY = os.getenv("API_SOURCE_1_KEY")
-genai.configure(api_key=API_KEY)
-model = genai.GenerativeModel('gemini-1.5-flash')
+# Two Gemini API keys — second is used as fallback if first hits quota
+API_KEY_1 = os.getenv("API_SOURCE_1_KEY")
+API_KEY_2 = os.getenv("API_SOURCE_2_KEY")
+
+def _get_model(api_key):
+    genai.configure(api_key=api_key)
+    return genai.GenerativeModel('gemini-1.5-flash')
 
 def fetch_internships():
     """
     Uses Gemini AI to 'search' and fetch latest internship details.
-    Acts as an AI bot to aggregate information.
+    Tries API_KEY_1 first, falls back to API_KEY_2 on quota/error.
     """
     prompt = """
     Act as a high-precision internship recruitment bot. 
@@ -50,42 +53,43 @@ def fetch_internships():
     ]
     """
 
-    try:
-        response = model.generate_content(prompt)
-        text = response.text.strip()
-        print(f"AI Bot Raw Response Length: {len(text)}")
-        
-        # Robust JSON cleaning
-        if "```json" in text:
-            text = text.split("```json")[1].split("```")[0].strip()
-        elif "```" in text:
-            text = text.split("```")[1].split("```")[0].strip()
-            
-        internships = json.loads(text)
-        print(f"AI Bot Parsed {len(internships)} internships")
-        
-        # Validate and filter: Ensure links look like direct application forms
-        final_list = []
-        for item in internships:
-            link = item.get('apply_link', '')
-            
-            # More permissive validation: Must have a link, and shouldn't be a obvious placeholder
-            if link and "http" in link.lower() and "example.com" not in link.lower():
-                # Prefer direct links but allow some general ones if they look legit
-                # We'll just tag them but include them
-                item['source'] = "AI Direct-Link Bot"
-                final_list.append(item)
+    for key_index, api_key in enumerate([API_KEY_1, API_KEY_2], start=1):
+        if not api_key:
+            continue
+        try:
+            print(f"Trying Gemini API Key {key_index}...")
+            model = _get_model(api_key)
+            response = model.generate_content(prompt)
+            text = response.text.strip()
+            print(f"AI Bot Raw Response Length: {len(text)}")
+
+            # Robust JSON cleaning
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0].strip()
+            elif "```" in text:
+                text = text.split("```")[1].split("```")[0].strip()
+
+            internships = json.loads(text)
+            print(f"AI Bot Parsed {len(internships)} internships using Key {key_index}")
+
+            final_list = []
+            for item in internships:
+                link = item.get('apply_link', '')
+                if link and "http" in link.lower() and "example.com" not in link.lower():
+                    item['source'] = "AI Direct-Link Bot"
+                    final_list.append(item)
+                else:
+                    print(f"Skipping invalid link for {item.get('title')}: {link}")
+
+            if final_list:
+                return final_list
             else:
-                print(f"Skipping invalid link for {item.get('title')}: {link}")
-            
-        if not final_list:
-            print("No valid links found by AI. Using fallback data.")
-            return get_mock_ai_data()
-            
-        return final_list
-    except Exception as e:
-        print(f"Error fetching from AI API: {e}")
-        return get_mock_ai_data()
+                print(f"No valid links from Key {key_index}, trying next key...")
+        except Exception as e:
+            print(f"Error with Gemini Key {key_index}: {e} — trying next key...")
+
+    print("All Gemini keys failed. Using fallback data.")
+    return get_mock_ai_data()
 
 def get_mock_ai_data():
     """Fallbacks that actually point to real career portals if AI fails"""
