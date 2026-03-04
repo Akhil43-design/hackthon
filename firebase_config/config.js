@@ -4,13 +4,13 @@ import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth
 import { initializeFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAKt0sWnICDIHnZNPHUd5RbskXMM2XGbEE",
-    authDomain: "internhub-db72e.firebaseapp.com",
-    databaseURL: "https://internhub-db72e-default-rtdb.firebaseio.com",
-    projectId: "internhub-db72e",
-    storageBucket: "internhub-db72e.firebasestorage.app",
-    messagingSenderId: "20092896820",
-    appId: "1:20092896820:web:0e3799a9aea39e88a1ac61"
+    apiKey: "AIzaSyD7vjsXWM3pLbl3hiY1V2djxZ-HZAZyf2s",
+    authDomain: "intern-dc6a7.firebaseapp.com",
+    databaseURL: "https://intern-dc6a7-default-rtdb.firebaseio.com",
+    projectId: "intern-dc6a7",
+    storageBucket: "intern-dc6a7.firebasestorage.app",
+    messagingSenderId: "874712769258",
+    appId: "1:874712769258:web:cc45dab25669875efe2d93"
 };
 
 // Initialize Firebase
