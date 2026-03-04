@@ -21,8 +21,7 @@ console.log("🔥 Firebase Config: Initializing Firestore with Long Polling fix.
 
 // Hardened Firestore initialization to bypass aggressive ad-blockers
 const db = initializeFirestore(app, {
-    experimentalForceLongPolling: true,
-    experimentalAutoDetectLongPolling: true
+    experimentalForceLongPolling: true
 });
 
 export { auth, db };
