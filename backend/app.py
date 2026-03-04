@@ -1,7 +1,20 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
-from backend.services import api_source1, api_source2
+import firebase_admin
+from firebase_admin import credentials, firestore
+
+# Initialize Firebase Admin
+# NOTE: In production, use service account credentials. 
+# For demo/local, if you have a serviceAccountKey.json, use it.
+try:
+    if not firebase_admin._apps:
+        cred = credentials.Certificate('firebase_config/serviceAccountKey.json')
+        firebase_admin.initialize_app(cred)
+    db = firestore.client()
+except Exception as e:
+    print(f"Firestore Initialization Warning: {e}. Falling back to API only.")
+    db = None
 
 app = Flask(__name__)
 CORS(app)
@@ -14,14 +27,42 @@ def health_check():
 def get_internships():
     # Fetch from multiple sources
     results = []
+    
+    # 1. Fetch from RapidAPI (Source 2)
     results.extend(api_source2.fetch_internships())
+    
+    # 2. Fetch from AI Bot (Source 1)
     results.extend(api_source1.fetch_internships())
     
+    # 3. Fetch from Community Submissions (Firestore)
+    if db:
+        try:
+            submissions_ref = db.collection('internships_posted')
+            docs = submissions_ref.stream()
+            for doc in docs:
+                data = doc.to_dict()
+                results.append({
+                    "title": data.get('title'),
+                    "company": data.get('company'),
+                    "location": data.get('location'),
+                    "domain": data.get('domain'),
+                    "description": data.get('description'),
+                    "deadline": data.get('deadline'),
+                    "apply_link": data.get('apply_link'),
+                    "source": "Company Submission"
+                })
+        except Exception as e:
+            print(f"Error fetching from Firestore: {e}")
+
     # Simple de-duplication based on title and company
     unique_results = []
     seen = set()
     for item in results:
-        key = (item['title'].lower(), item['company'].lower())
+        # Some items might not have title or company if corrupted
+        title = item.get('title', '').lower()
+        company = item.get('company', '').lower()
+        key = (title, company)
+        
         if key not in seen:
             seen.add(key)
             unique_results.append(item)

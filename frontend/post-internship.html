@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Internship - InternHub</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .post-container {
+            max-width: 800px;
+            margin: 4rem auto;
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-btn {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .success-msg {
+            display: none;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body style="overflow-y: auto;">
+    <header>
+        <a href="/" class="logo">InternHub</a>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="post-container">
+        <div id="successMessage" class="success-msg">
+            Internship submitted successfully and will appear in the listings.
+        </div>
+
+        <h2 style="margin-bottom: 0.5rem;">Post an Internship</h2>
+        <p style="color: var(--secondary); margin-bottom: 2.5rem;">Reach thousands of students by listing your
+            opportunity on InternHub.</p>
+
+        <form id="postInternshipForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <input type="text" id="company" required placeholder="e.g. Google">
+                </div>
+                <div class="form-group">
+                    <label>Internship Title</label>
+                    <input type="text" id="title" required placeholder="e.g. Software Engineer Intern">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="location" required placeholder="e.g. Remote, Bangalore">
+                </div>
+                <div class="form-group">
+                    <label>Domain / Category</label>
+                    <select id="domain" required>
+                        <option value="Software Development">Software Development</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Data Science">Data Science</option>
+                        <option value="UI/UX Design">UI/UX Design</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Application Deadline</label>
+                    <input type="date" id="deadline" required>
+                </div>
+                <div class="form-group">
+                    <label>Contact Email</label>
+                    <input type="email" id="email" required placeholder="hr@company.com">
+                </div>
+                <div class="form-group full-width">
+                    <label>Official Apply Link (Mandatory)</label>
+                    <input type="url" id="apply_link" required placeholder="https://company.com/careers/job-123">
+                </div>
+                <div class="form-group full-width">
+                    <label>Internship Description</label>
+                    <textarea id="description" required
+                        placeholder="Describe the role, responsibilities, and requirements..."></textarea>
+                </div>
+            </div>
+            <button type="submit" class="submit-btn" id="submitBtn">Post Internship</button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { db } from "/firebase_config/config.js";
+        import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        document.getElementById('postInternshipForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const success = document.getElementById('successMessage');
+
+            btn.disabled = true;
+            btn.innerText = 'Submitting...';
+
+            const data = {
+                company: document.getElementById('company').value,
+                title: document.getElementById('title').value,
+                location: document.getElementById('location').value,
+                domain: document.getElementById('domain').value,
+                description: document.getElementById('description').value,
+                deadline: document.getElementById('deadline').value,
+                apply_link: document.getElementById('apply_link').value,
+                email: document.getElementById('email').value,
+                source: "company_submission",
+                createdAt: serverTimestamp()
+            };
+
+            try {
+                await addDoc(collection(db, "internships_posted"), data);
+                success.style.display = 'block';
+                document.getElementById('postInternshipForm').reset();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                console.error("Error posting internship:", error);
+                alert("Error: " + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Post Internship';
+            }
+        });
+    </script>
+</body>
+
+</html>
