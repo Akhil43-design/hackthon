@@ -127,16 +127,55 @@
                         placeholder="Tell us about your past work or projects..."></textarea>
                 </div>
             </div>
-            <button type="submit" class="submit-btn">Complete Registration</button>
+            <button type="submit" class="submit-btn" id="signupBtn">Complete Registration</button>
         </form>
     </div>
 
-    <script src="../firebase_config/config.js"></script>
-    <script>
-        document.getElementById('signupForm').addEventListener('submit', (e) => {
+    <script type="module">
+        import { auth, db } from "../firebase_config/config.js";
+        import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('Signup integration with Firebase will be handled here.');
-            window.location.href = 'index.html';
+            const submitBtn = document.getElementById('signupBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Creating Profile...";
+
+            const email = document.getElementById('email').value;
+            // Simple default password for demo purposes, in real app, add password field
+            const password = "password123";
+
+            try {
+                // 1. Create User in Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // 2. Store Profile Data in Firestore
+                const profileData = {
+                    fullName: document.getElementById('fullName').value,
+                    email: email,
+                    phone: document.getElementById('phone').value,
+                    college: document.getElementById('college').value,
+                    degree: document.getElementById('degree').value,
+                    domain: document.getElementById('domain').value,
+                    skills: document.getElementById('skills').value,
+                    portfolio: document.getElementById('portfolio').value,
+                    location: document.getElementById('location').value,
+                    experience: document.getElementById('experience').value,
+                    createdAt: new Date().toISOString()
+                };
+
+                await setDoc(doc(db, "users", user.uid), profileData);
+
+                alert('Account created successfully! Your default password is: password123');
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error("Error during signup:", error);
+                alert("Error: " + error.message);
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Complete Registration";
+            }
         });
     </script>
 </body>

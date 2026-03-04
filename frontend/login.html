@@ -75,7 +75,7 @@
                 <label>Password</label>
                 <input type="password" id="password" required placeholder="••••••••">
             </div>
-            <button type="submit" class="submit-btn">Sign In</button>
+            <button type="submit" class="submit-btn" id="loginBtn">Sign In</button>
         </form>
         <p style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--secondary);">
             Don't have an account? <a href="signup.html"
@@ -83,12 +83,28 @@
         </p>
     </div>
 
-    <script src="../firebase_config/config.js"></script>
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
+    <script type="module">
+        import { auth } from "../firebase_config/config.js";
+        import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('Login with Firebase will be handled here.');
-            window.location.href = 'index.html';
+            const submitBtn = document.getElementById('loginBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Signing In...";
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error("Login error:", error);
+                alert("Login failed: " + error.message);
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Sign In";
+            }
         });
     </script>
 </body>
