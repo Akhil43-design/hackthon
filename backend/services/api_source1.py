@@ -16,20 +16,24 @@ def fetch_internships():
     Acts as an AI bot to aggregate information.
     """
     prompt = """
-    Act as a professional internship discovery bot. 
-    Find 10 ACTIVE and REAL internship opportunities for 2026/2027 in India or Remote. 
-    Focus on Software Engineering, Web Development, and Data Science roles.
+    Act as a high-precision internship recruitment bot. 
+    Search for and identify 10 CURRENT and SPECIFIC internship openings for 2025-2026. 
+    Target: Software Engineering, Frontend/Backend, Data Science, and DevOps.
     
-    CRITICAL: YOU MUST PROVIDE REAL, DIRECT APPLICATION LINKS (e.g., from LinkedIn, Indeed, Glassdoor, or company career portals). 
-    DO NOT provide placeholder 'example.com' links. If you cannot find a link for a specific role, skip it and find another.
+    CRITICAL REQUIREMENT: 
+    YOU MUST PROVIDE 'DEEP LINKS' TO THE SPECIFIC JOB POSTING. 
+    - AVOID: company.com/careers, linkedin.com/jobs, or indeed.com (general search).
+    - PREFER: Specific job IDs in the URL (e.g., google.com/careers/jobs/12345, amazon.jobs/en/jobs/23456, or direct Lever/Greenhouse/Workday links).
+    - If a specific, direct application URL is not available, DO NOT INCLUDE THAT JOB. 
+    - THE LINK MUST TAKE THE USER DIRECTLY TO THE APPLY BUTTON FOR THAT SPECIFIC ROLE.
     
     For each internship, provide:
     1. title (Job Title)
     2. company (Company Name)
-    3. location (e.g., 'Remote', 'Bangalore, India')
-    4. domain (e.g., 'Web Development', 'AI/ML')
-    5. deadline (e.g., '2026-06-30' or 'Open till filled')
-    6. apply_link (A REAL URLs only - must start with http or https)
+    3. location (City, Country or Remote)
+    4. domain (Specific tech stack or field)
+    5. deadline (Specific date if possible, else 'ASAP')
+    6. apply_link (The DIRECT DEEP-LINK URL)
     
     Return the result ONLY as a JSON list of objects.
     Format:
@@ -41,7 +45,7 @@ def fetch_internships():
         "domain": "Domain",
         "deadline": "YYYY-MM-DD",
         "apply_link": "URL",
-        "source": "AI Search Bot"
+        "source": "AI Deep-Link Bot"
       }
     ]
     """
@@ -58,12 +62,14 @@ def fetch_internships():
             
         internships = json.loads(text)
         
-        # Validate and filter out low-quality links
+        # Validate and filter: Prefer long, specific URLs over short general ones
         final_list = []
         for item in internships:
             link = item.get('apply_link', '')
-            if link and not "example.com" in link:
-                item['source'] = "AI Discovery Bot"
+            # Filter out general homepages and simple LinkedIn search links
+            is_general = len(link) < 35 or link.endswith('/careers') or link.endswith('/jobs')
+            if link and not "example.com" in link and not is_general:
+                item['source'] = "AI Deep-Link Bot"
                 final_list.append(item)
             
         return final_list if final_list else get_mock_ai_data()
