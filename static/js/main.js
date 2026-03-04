@@ -1,5 +1,6 @@
 import { db } from "/firebase_config/config.js";
 import { collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { API_URL } from "/static/js/config.js";
 
 // DOM Elements
 const internshipContainer = document.getElementById('internshipContainer');
