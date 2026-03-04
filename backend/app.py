@@ -5,15 +5,25 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 # Initialize Firebase Admin
-# NOTE: In production, use service account credentials. 
-# For demo/local, if you have a serviceAccountKey.json, use it.
 try:
     if not firebase_admin._apps:
-        cred = credentials.Certificate('firebase_config/serviceAccountKey.json')
-        firebase_admin.initialize_app(cred)
-    db = firestore.client()
+        # Check if service account file exists to avoid crash
+        cert_path = 'firebase_config/serviceAccountKey.json'
+        if os.path.exists(cert_path):
+            cred = credentials.Certificate(cert_path)
+            firebase_admin.initialize_app(cred)
+            db = firestore.client()
+            print("Firestore initialized successfully.")
+        else:
+            print(f"Warning: {cert_path} not found. Using default app or skipping Firestore.")
+            # Try initializing with default credentials if available (e.g. on GCP/Vercel)
+            try:
+                firebase_admin.initialize_app()
+                db = firestore.client()
+            except:
+                db = None
 except Exception as e:
-    print(f"Firestore Initialization Warning: {e}. Falling back to API only.")
+    print(f"Firestore Initialization Error: {e}")
     db = None
 
 app = Flask(__name__)
