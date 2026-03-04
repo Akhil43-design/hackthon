@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - InternHub</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <style>
+        .auth-container {
+            max-width: 600px;
+            margin: 4rem auto;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body style="overflow-y: auto;">
+    <header>
+        <a href="index.html" class="logo">InternHub</a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="auth-container">
+        <h2 style="margin-bottom: 0.5rem;">Create Your Profile</h2>
+        <p style="color: var(--secondary); margin-bottom: 2rem; font-size: 0.9rem;">Join InternHub to get personalized
+            recommendations.</p>
+
+        <form id="signupForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="fullName" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" required placeholder="john@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="phone" required placeholder="+1 234 567 890">
+                </div>
+                <div class="form-group">
+                    <label>College Name</label>
+                    <input type="text" id="college" required placeholder="Example University">
+                </div>
+                <div class="form-group">
+                    <label>Degree</label>
+                    <input type="text" id="degree" required placeholder="B.S. Computer Science">
+                </div>
+                <div class="form-group">
+                    <label>Preferred Domain</label>
+                    <select id="domain">
+                        <option value="software">Software Engineering</option>
+                        <option value="data">Data Science</option>
+                        <option value="design">UI/UX Design</option>
+                        <option value="marketing">Digital Marketing</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label>Skills (Comma separated)</label>
+                    <input type="text" id="skills" placeholder="Python, JavaScript, React, etc.">
+                </div>
+                <div class="form-group">
+                    <label>Portfolio / GitHub URL</label>
+                    <input type="url" id="portfolio" placeholder="https://github.com/johndoe">
+                </div>
+                <div class="form-group">
+                    <label>Preferred Location</label>
+                    <input type="text" id="location" placeholder="Remote, New York, etc.">
+                </div>
+                <div class="form-group full-width">
+                    <label>Experience (Short description)</label>
+                    <textarea id="experience" rows="3"
+                        placeholder="Tell us about your past work or projects..."></textarea>
+                </div>
+            </div>
+            <button type="submit" class="submit-btn">Complete Registration</button>
+        </form>
+    </div>
+
+    <script src="../firebase_config/config.js"></script>
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Signup integration with Firebase will be handled here.');
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+
+</html>

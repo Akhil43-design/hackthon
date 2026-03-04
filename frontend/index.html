@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternHub - Smart Internship Aggregation Platform</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">InternHub</a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#">Domains</a></li>
+                <li><a href="#">News</a></li>
+            </ul>
+        </nav>
+        <div class="auth-actions">
+            <button class="auth-btn" id="signInBtn">Sign In</button>
+            <a href="signup.html" class="auth-btn" style="background-color: var(--secondary); margin-left: 0.5rem;">Sign Up</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Left Section: Tech News -->
+        <section class="panel news-panel">
+            <h2>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1m2 13a2 2 0 0 1-2-2V7m2 13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"></path><rect x="3" y="4" width="14" height="16" rx="2"></rect><line x1="7" y1="8" x2="13" y2="8"></line><line x1="7" y1="12" x2="13" y2="12"></line><line x1="7" y1="16" x2="10" y2="16"></line></svg>
+                Latest Tech News
+            </h2>
+            <div id="newsContainer">
+                <!-- Data will be loaded via JS -->
+                 <p>Loading news...</p>
+            </div>
+        </section>
+
+        <!-- Right Section: Internship Listings -->
+        <section class="panel internships-panel">
+            <h2>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                internships for You
+            </h2>
+            <div id="internshipContainer">
+                <!-- Data will be loaded via JS -->
+                <p>Finding internships...</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="../static/js/main.js"></script>
+</body>
+</html>

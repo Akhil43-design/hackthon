@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Internships - InternHub</title>
+    <link rel="stylesheet" href="../static/css/styles.css">
+</head>
+
+<body style="overflow-y: auto;">
+    <header>
+        <a href="index.html" class="logo">InternHub</a>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="bookmarks.html" style="color: var(--primary);">Bookmarks</a></li>
+            </ul>
+        </nav>
+        <div class="auth-actions">
+            <button class="auth-btn">John Doe</button>
+        </div>
+    </header>
+
+    <main style="display: block; padding: 4rem 10%;">
+        <h2 style="margin-bottom: 2rem;">Your Saved Internships</h2>
+        <div id="bookmarksContainer"
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
+            <!-- Bookmarked items will be loaded here -->
+            <p style="color: var(--secondary);">You haven't saved any internships yet.</p>
+        </div>
+    </main>
+
+    <script src="../static/js/main.js"></script>
+    <script>
+        // Specific logic for bookmarks page
+        async function loadBookmarks() {
+            const container = document.getElementById('bookmarksContainer');
+            try {
+                // This would normally fetch from /api/bookmarks
+                // For now, we mock the visualization
+                const mockBookmarks = [
+                    {
+                        "title": "Backend Intern",
+                        "company": "AI Solutions",
+                        "location": "San Francisco",
+                        "domain": "Engineering",
+                        "deadline": "2026-05-01",
+                        "apply_link": "#",
+                        "source": "Source 1"
+                    }
+                ];
+
+                if (mockBookmarks.length > 0) {
+                    container.innerHTML = '';
+                    mockBookmarks.forEach(intern => {
+                        container.innerHTML += createInternshipCard(intern);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading bookmarks:', error);
+            }
+        }
+
+        // Overriding the default load since this is bookmarks.html
+        document.addEventListener('DOMContentLoaded', loadBookmarks);
+    </script>
+</body>
+
+</html>
