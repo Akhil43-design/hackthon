@@ -1,64 +1,85 @@
-import requests
 import os
+import json
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
 
-# Adzuna API Credentials (Placeholder - needs real ones from user)
-ADZUNA_APP_ID = os.getenv("ADZUNA_APP_ID", "ad61b1b4") # Placeholder ID
-ADZUNA_APP_KEY = os.getenv("ADZUNA_APP_KEY", "7d35443e6a2b8969415c911b306b5f48") # Placeholder Key
+# Configure the AI API
+API_KEY = os.getenv("API_SOURCE_1_KEY")
+genai.configure(api_key=API_KEY)
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 def fetch_internships():
     """
-    Fetches internships from Adzuna API and formats them.
+    Uses Gemini AI to 'search' and fetch latest internship details.
+    Acts as an AI bot to aggregate information.
     """
-    # Search parameters: internships in India (or worldwide)
-    url = f"https://api.adzuna.com/v1/api/jobs/in/search/1?app_id={ADZUNA_APP_ID}&app_key={ADZUNA_APP_KEY}&results_per_page=10&what=internship&content-type=application/json"
+    prompt = """
+    Act as a professional internship aggregation bot. 
+    Find 10 real and current internship opportunities in the fields of Software Engineering, Data Science, and UI/UX Design.
+    For each internship, provide:
+    1. title (Job Title)
+    2. company (Company Name)
+    3. location (e.g., 'Remote', 'Bangalore, India')
+    4. domain (e.g., 'Web Development', 'UI/UX')
+    5. deadline (e.g., '2026-05-15' or 'ASAP')
+    6. apply_link (A real or verifiable URL)
     
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            jobs = data.get('results', [])
-            
-            formatted_data = []
-            for job in jobs:
-                formatted_data.append({
-                    "title": job.get('title'),
-                    "company": job.get('company', {}).get('display_name', 'Unknown Company'),
-                    "location": job.get('location', {}).get('display_name', 'Remote'),
-                    "domain": job.get('category', {}).get('label', 'General'),
-                    "deadline": "Not Specified",
-                    "apply_link": job.get('redirect_url'),
-                    "source": "Adzuna"
-                })
-            return formatted_data
-        else:
-            print(f"Adzuna API Error: {response.status_code}")
-            return get_mock_data()
-    except Exception as e:
-        print(f"Error fetching from Adzuna: {e}")
-        return get_mock_data()
+    Return the result ONLY as a JSON list of objects. 
+    Format:
+    [
+      {
+        "title": "Role",
+        "company": "Company",
+        "location": "Loc",
+        "domain": "Domain",
+        "deadline": "YYYY-MM-DD",
+        "apply_link": "URL",
+        "source": "AI Search Bot"
+      }
+    ]
+    """
 
-def get_mock_data():
-    """Fallback mock data if API fails or credentials invalid"""
+    try:
+        response = model.generate_content(prompt)
+        # Clean up the response text in case it includes markdown code blocks
+        text = response.text.strip()
+        if text.startswith("```json"):
+            text = text[7:-3].strip()
+        elif text.startswith("```"):
+            text = text[3:-3].strip()
+            
+        internships = json.loads(text)
+        
+        # Ensure 'source' is set
+        for item in internships:
+            item['source'] = "AI Search Bot"
+            
+        return internships
+    except Exception as e:
+        print(f"Error fetching from AI API: {e}")
+        return get_mock_ai_data()
+
+def get_mock_ai_data():
+    """Fallback if AI API fails or hits quota"""
     return [
         {
-            "title": "Software Engineering Intern",
-            "company": "Tech Solutions Inc.",
-            "location": "Bangalore, India",
-            "domain": "IT / Software",
-            "deadline": "2026-05-01",
-            "apply_link": "https://example.com/apply1",
-            "source": "Mock API"
+            "title": "Junior AI Engineer Intern",
+            "company": "DeepMind Explorer",
+            "location": "Remote",
+            "domain": "Artificial Intelligence",
+            "deadline": "2026-04-30",
+            "apply_link": "https://example.com/ai-intern",
+            "source": "AI Bot Fallback"
         },
         {
-            "title": "UX Design Intern",
-            "company": "Creative Agency",
-            "location": "Remote",
-            "domain": "Design",
-            "deadline": "2026-04-15",
-            "apply_link": "https://example.com/apply2",
-            "source": "Mock API"
+            "title": "Frontend Developer Intern",
+            "company": "WebX Studio",
+            "location": "Hyderabad, India",
+            "domain": "Web Development",
+            "deadline": "2026-05-10",
+            "apply_link": "https://example.com/web-intern",
+            "source": "AI Bot Fallback"
         }
     ]
