@@ -45,19 +45,26 @@ async function loadInternships() {
         const internships = await response.json();
 
         internshipContainer.innerHTML = internships.map(intern => `
-            <div class="flex items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-primary transition-all cursor-pointer" 
+            <div class="flex flex-col min-w-[280px] bg-white dark:bg-slate-900 p-5 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 snap-center"
                  onclick="window.location.href='details.html?data=${encodeURIComponent(JSON.stringify(intern))}'">
-                <div class="size-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
-                    <img src="https://ui-avatars.com/api/?name=${intern.company}&background=random" class="w-8 h-8 object-contain">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="size-12 rounded-2xl bg-slate-50 overflow-hidden flex items-center justify-center p-2">
+                        <img src="https://ui-avatars.com/api/?name=${intern.company}&background=random" class="w-full h-full object-contain">
+                    </div>
+                    <span class="bg-emerald-100 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">New</span>
                 </div>
-                <div class="flex-1">
-                    <h4 class="text-slate-900 dark:text-slate-100 font-bold text-sm uppercase">${intern.title}</h4>
-                    <p class="text-slate-500 dark:text-slate-400 text-xs">${intern.company} • ${intern.location}</p>
+                <h3 class="text-slate-900 dark:text-slate-100 font-bold text-lg mb-1 leading-tight">${intern.title}</h3>
+                <p class="text-slate-500 text-xs mb-4">${intern.company} • ${intern.location}</p>
+                
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <span class="px-2.5 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-lg uppercase tracking-wider">${intern.location === 'Remote' ? 'Remote' : 'On-site'}</span>
+                    <span class="px-2.5 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-lg uppercase tracking-wider">$5,000 / mo</span>
+                    <span class="px-2.5 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-lg uppercase tracking-wider">Full-time</span>
                 </div>
-                <div class="text-right">
-                    <p class="text-primary font-bold text-[10px] uppercase">${intern.domain}</p>
-                    <p class="text-slate-400 text-[10px]">Active</p>
-                </div>
+
+                <a href="${intern.apply_link}" target="_blank" onclick="event.stopPropagation()" class="w-full bg-primary text-white text-center py-3 rounded-2xl font-bold text-sm shadow-lg shadow-blue-100 transition-transform active:scale-95">
+                    Apply Now
+                </a>
             </div>
         `).join('');
     } catch (error) {
@@ -112,14 +119,15 @@ async function loadNews() {
         const news = await response.json();
 
         newsContainer.innerHTML = news.map(item => `
-            <div class="group relative flex flex-col gap-2">
-                <div class="w-full h-40 rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-800">
-                    <img src="https://ui-avatars.com/api/?name=News&background=random" class="w-full h-full object-cover">
+            <div class="flex flex-col min-w-[280px] bg-white dark:bg-slate-900 p-4 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 snap-center">
+                <div class="w-full aspect-[4/3] rounded-2xl overflow-hidden mb-4 bg-slate-100">
+                    <img src="https://ui-avatars.com/api/?name=${item.title}&background=random&size=300" class="w-full h-full object-cover">
                 </div>
-                <p class="text-[10px] font-bold text-primary uppercase tracking-widest">Tech Update</p>
-                <h3 class="text-slate-900 dark:text-slate-100 font-bold text-lg leading-snug">${item.title}</h3>
-                <p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2">${item.description}</p>
-                <a href="${item.link}" target="_blank" class="text-primary text-xs font-bold hover:underline">Read Story</a>
+                <h3 class="text-slate-900 dark:text-slate-100 font-bold text-base mb-2 leading-tight">${item.title}</h3>
+                <p class="text-slate-500 dark:text-slate-400 text-xs mb-4 line-clamp-2">${item.description}</p>
+                <a href="${item.link}" target="_blank" class="w-full bg-slate-50 text-primary text-center py-3 rounded-full font-bold text-sm">
+                    Read More
+                </a>
             </div>
         `).join('');
     } catch (error) {
