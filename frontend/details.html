@@ -49,16 +49,25 @@
                 Apply Now
                 <span class="material-symbols-outlined text-lg">arrow_forward</span>
             </a>
-            <button
+            <button id="bookmarkBtn"
                 class="flex items-center justify-center w-14 h-14 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
-                <span class="material-symbols-outlined">bookmark</span>
+                <span id="bookmarkIcon" class="material-symbols-outlined">bookmark</span>
             </button>
         </div>
     </div>
 
     <script type="module">
+        import { toggleBookmark, isBookmarked } from "/static/js/main.js";
+
         const params = new URLSearchParams(window.location.search);
         const internData = JSON.parse(decodeURIComponent(params.get('data')));
+
+        async function updateBookmarkUI() {
+            const saved = await isBookmarked(internData);
+            const icon = document.getElementById('bookmarkIcon');
+            icon.style.fontVariationSettings = saved ? "'FILL' 1" : "'FILL' 0";
+            icon.classList.toggle('text-primary', saved);
+        }
 
         if (internData) {
             document.getElementById('detailsContainer').innerHTML = `
@@ -99,6 +108,14 @@
                 </div>
             `;
             document.getElementById('applyBtn').href = internData.apply_link;
+
+            // Check bookmark status
+            updateBookmarkUI();
+
+            document.getElementById('bookmarkBtn').addEventListener('click', async () => {
+                await toggleBookmark(internData);
+                updateBookmarkUI();
+            });
         }
     </script>
 </body>

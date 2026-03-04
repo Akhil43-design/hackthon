@@ -2,94 +2,109 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Saved Internships - InternHub</title>
-    <link rel="stylesheet" href="../static/css/styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="/static/css/tailwind.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap"
+        rel="stylesheet" />
 </head>
 
-<body style="overflow-y: auto;">
-    <header>
-        <a href="index.html" class="logo">InternHub</a>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="bookmarks.html" style="color: var(--primary);">Bookmarks</a></li>
-            </ul>
-        </nav>
-        <div class="auth-actions">
-            <!-- Auth state managed by JS -->
-        </div>
-    </header>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+    <div
+        class="relative flex min-h-screen w-full flex-col max-w-[1000px] mx-auto bg-background-light dark:bg-background-dark shadow-2xl">
+        <header
+            class="sticky top-0 z-50 flex items-center bg-white/80 dark:bg-background-dark/80 backdrop-blur-md p-4 justify-between border-b border-slate-200 dark:border-slate-800">
+            <div onclick="window.history.back()"
+                class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </div>
+            <h2 class="text-slate-900 dark:text-slate-100 text-xl font-bold flex-1 text-center">Saved Internships</h2>
+            <div class="w-10"></div>
+        </header>
 
-    <main style="display: block; padding: 4rem 10%;">
-        <h2 style="margin-bottom: 2rem;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 0.5rem;">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-            </svg>
-            Your Saved Internships
-        </h2>
-        <div id="bookmarksContainer"
-            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem;">
-            <p style="color: var(--secondary);">Loading bookmarks...</p>
-        </div>
-    </main>
+        <main class="flex-1 p-4">
+            <div id="savedContainer" class="space-y-4">
+                <p class="text-center p-10 text-slate-500">Loading your bookmarks...</p>
+            </div>
+        </main>
+
+        <nav
+            class="fixed bottom-0 left-0 right-0 z-50 max-w-[1000px] mx-auto bg-white/90 dark:bg-background-dark/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 px-6 pb-6 pt-3">
+            <div class="flex items-center justify-between">
+                <a class="flex flex-col items-center gap-1 text-slate-400" href="index.html">
+                    <span class="material-symbols-outlined">home</span>
+                    <span class="text-[10px] font-medium">Home</span>
+                </a>
+                <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+                    <span class="material-symbols-outlined">explore</span>
+                    <span class="text-[10px] font-medium">Explore</span>
+                </a>
+                <a class="flex flex-col items-center gap-1 text-primary" href="bookmarks.html">
+                    <span class="material-symbols-outlined fill-icon"
+                        style="font-variation-settings: 'FILL' 1;">bookmark</span>
+                    <span class="text-[10px] font-bold">Saved</span>
+                </a>
+                <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+                    <span class="material-symbols-outlined">person</span>
+                    <span class="text-[10px] font-medium">Profile</span>
+                </a>
+            </div>
+        </nav>
+    </div>
 
     <script type="module">
         import { auth, db } from "/firebase_config/config.js";
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const container = document.getElementById('bookmarksContainer');
+        import { collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                loadBookmarks(user.uid);
-            } else {
-                container.innerHTML = '<p style="color: var(--secondary);">Please <a href="login.html" style="color: var(--primary);">sign in</a> to view your bookmarks.</p>';
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
             }
-        });
 
-        async function loadBookmarks(uid) {
+            const container = document.getElementById('savedContainer');
             try {
-                const q = query(collection(db, "bookmarks"), where("user_id", "==", uid));
+                const bookmarksRef = collection(db, `users/${user.uid}/bookmarks`);
+                const q = query(bookmarksRef, orderBy("savedAt", "desc"));
                 const querySnapshot = await getDocs(q);
 
                 if (querySnapshot.empty) {
-                    container.innerHTML = '<p style="color: var(--secondary);">You haven\'t saved any internships yet.</p>';
+                    container.innerHTML = `
+                        <div class="text-center p-10">
+                            <span class="material-symbols-outlined text-6xl text-slate-200">bookmark_border</span>
+                            <p class="text-slate-500 mt-4">You haven't saved any internships yet.</p>
+                            <a href="index.html" class="inline-block mt-4 text-primary font-bold">Browse Opportunities</a>
+                        </div>
+                    `;
                     return;
                 }
 
-                container.innerHTML = '';
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data().internship_data;
-                    container.innerHTML += createInternshipCard(data);
-                });
+                container.innerHTML = querySnapshot.docs.map(doc => {
+                    const intern = doc.data();
+                    return `
+                        <div class="flex items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-primary transition-all cursor-pointer" 
+                             onclick="window.location.href='details.html?data=${encodeURIComponent(JSON.stringify(intern))}'">
+                            <div class="size-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+                                <img src="https://ui-avatars.com/api/?name=${intern.company}&background=random" class="w-8 h-8 object-contain">
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-slate-900 dark:text-slate-100 font-bold text-sm uppercase">${intern.title}</h4>
+                                <p class="text-slate-500 dark:text-slate-400 text-xs">${intern.company} • ${intern.location}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
             } catch (error) {
                 console.error("Error loading bookmarks:", error);
-                container.innerHTML = '<p style="color: var(--danger);">Error loading bookmarks.</p>';
+                container.innerHTML = '<p class="text-red-500 text-center">Failed to load saved internships.</p>';
             }
-        }
-
-        function createInternshipCard(intern) {
-            return `
-                <div class="card internship-card">
-                    <h3>${intern.title}</h3>
-                    <span class="company-name">${intern.company}</span>
-                    <div class="meta-info" style="margin-top: 1rem;">
-                        <span>📍 ${intern.location}</span>
-                        <span>💼 ${intern.domain}</span>
-                    </div>
-                    <div style="margin-top: 1.5rem; text-align: right;">
-                        <a href="${intern.apply_link}" class="apply-btn" target="_blank">Apply Now</a>
-                    </div>
-                </div>
-            `;
-        }
+        });
     </script>
 </body>
 

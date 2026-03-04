@@ -1,6 +1,6 @@
 import { auth, db } from "/firebase_config/config.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const API_URL = "https://intern-hub-orcin.vercel.app/api";
 
@@ -125,6 +125,43 @@ async function loadNews() {
     } catch (error) {
         console.error("Error loading news:", error);
     }
+}
+
+// Bookmark Logic
+export async function toggleBookmark(internship) {
+    if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Use a unique ID based on company and title
+    const internId = btoa(`${internship.company}-${internship.title}`).replace(/[/+=]/g, '');
+    const bookmarkRef = doc(db, `users/${currentUser.uid}/bookmarks`, internId);
+
+    try {
+        const docSnap = await getDoc(bookmarkRef);
+        if (docSnap.exists()) {
+            await deleteDoc(bookmarkRef);
+            return false; // Unbookmarked
+        } else {
+            await setDoc(bookmarkRef, {
+                ...internship,
+                savedAt: new Date().toISOString()
+            });
+            return true; // Bookmarked
+        }
+    } catch (error) {
+        console.error("Error toggling bookmark:", error);
+        throw error;
+    }
+}
+
+export async function isBookmarked(internship) {
+    if (!currentUser) return false;
+    const internId = btoa(`${internship.company}-${internship.title}`).replace(/[/+=]/g, '');
+    const bookmarkRef = doc(db, `users/${currentUser.uid}/bookmarks`, internId);
+    const docSnap = await getDoc(bookmarkRef);
+    return docSnap.exists();
 }
 
 // Global Initialization
