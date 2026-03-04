@@ -68,7 +68,16 @@ function renderInternships(internships) {
     }
 
     internshipContainer.innerHTML = internships.map(intern => {
-        const logoUrl = `https://logo.clearbit.com/${intern.company.split(' ')[0].toLowerCase().replace(/[^a-z0-z]/g, '')}.com`;
+        const companyMap = {
+            'google': 'google.com',
+            'microsoft': 'microsoft.com',
+            'amazon': 'amazon.com',
+            'apple': 'apple.com',
+            'meta': 'meta.com',
+            'netflix': 'netflix.com'
+        };
+        const domain = companyMap[intern.company.toLowerCase()] || `${intern.company.split(' ')[0].toLowerCase().replace(/[^a-z0-z]/g, '')}.com`;
+        const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
         const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(intern.company)}&background=random&color=fff`;
 
         return `
