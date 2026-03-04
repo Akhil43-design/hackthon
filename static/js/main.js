@@ -10,6 +10,7 @@ const newsContainer = document.getElementById('newsContainer');
 const recommendationContainer = document.getElementById('recommendationContainer');
 const userNameEl = document.getElementById('userName');
 const authBtn = document.getElementById('authBtn');
+const userAvatarEl = document.getElementById('userAvatar');
 
 // Initialize State
 let currentUser = null;
@@ -18,23 +19,29 @@ let currentUser = null;
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
-        authBtn.innerText = "Sign Out";
-        authBtn.onclick = () => signOut(auth).then(() => window.location.reload());
+        if (authBtn) {
+            authBtn.innerText = "Sign Out";
+            authBtn.onclick = () => signOut(auth).then(() => window.location.reload());
+        }
 
         // Fetch profile
         const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
             const data = docSnap.data();
-            userNameEl.innerText = `Hi, ${data.name || 'User'}`;
-            document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${data.name}&background=random`;
+            if (userNameEl) userNameEl.innerText = `Hi, ${data.name || 'User'}`;
+            if (userAvatarEl) userAvatarEl.src = `https://ui-avatars.com/api/?name=${data.name}&background=random`;
             loadRecommendations(data);
         }
     } else {
-        authBtn.innerText = "Sign In";
-        authBtn.onclick = () => window.location.href = 'login.html';
-        userNameEl.innerText = "Welcome";
-        recommendationContainer.innerHTML = '<p class="text-slate-400 text-xs p-4 italic">Sign in to see personalized recommendations!</p>';
+        if (authBtn) {
+            authBtn.innerText = "Sign In";
+            authBtn.onclick = () => window.location.href = 'login.html';
+        }
+        if (userNameEl) userNameEl.innerText = "Welcome";
+        if (recommendationContainer) {
+            recommendationContainer.innerHTML = '<p class="text-slate-400 text-xs p-4 italic">Sign in to see personalized recommendations!</p>';
+        }
     }
 });
 
