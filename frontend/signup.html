@@ -2,133 +2,91 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - InternHub</title>
-    <link rel="stylesheet" href="../static/css/styles.css">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>User Registration - InternHub</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b6cee",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
     <style>
-        .auth-container {
-            max-width: 600px;
-            margin: 4rem auto;
-            background: white;
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-
-        label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--secondary);
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 0.95rem;
-        }
-
-        .full-width {
-            grid-column: span 2;
-        }
-
-        .submit-btn {
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            padding: 1rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 1rem;
+        body {
+            min-height: max(884px, 100dvh);
         }
     </style>
 </head>
 
-<body style="overflow-y: auto;">
-    <header>
-        <a href="index.html" class="logo">InternHub</a>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-            </ul>
-        </nav>
-    </header>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+    <div
+        class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden">
+        <!-- Top Navigation -->
+        <div
+            class="flex items-center bg-white dark:bg-slate-900 p-4 pb-2 justify-between border-b border-slate-200 dark:border-slate-800">
+            <a href="/" class="text-primary flex size-10 shrink-0 items-center justify-center cursor-pointer">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </a>
+            <h2
+                class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight flex-1 text-center pr-10">
+                Sign Up</h2>
+        </div>
 
-    <div class="auth-container">
-        <h2 style="margin-bottom: 0.5rem;">Create Your Profile</h2>
-        <p style="color: var(--secondary); margin-bottom: 2rem; font-size: 0.9rem;">Join InternHub to get personalized
-            recommendations.</p>
+        <!-- Form Content -->
+        <div class="flex flex-col gap-6 p-4 max-w-md mx-auto w-full">
+            <header class="text-center py-4">
+                <h3 class="text-slate-900 dark:text-slate-100 text-2xl font-bold leading-tight">Join InternHub</h3>
+                <p class="text-slate-500 dark:text-slate-400 mt-2">Get matched with AI-powered internship opportunities.
+                </p>
+            </header>
 
-        <form id="signupForm">
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="fullName" required placeholder="John Doe">
+            <form id="signupForm" class="space-y-4">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold ml-1">Full Name</label>
+                    <input id="name" required
+                        class="flex w-full rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 text-slate-900 dark:text-slate-100 transition-all"
+                        placeholder="John Doe" type="text" />
                 </div>
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" id="email" required placeholder="john@example.com">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold ml-1">Email Address</label>
+                    <input id="email" required
+                        class="flex w-full rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 text-slate-900 dark:text-slate-100 transition-all"
+                        placeholder="john@university.edu" type="email" />
                 </div>
-                <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="tel" id="phone" required placeholder="+1 234 567 890">
+                <div class="flex flex-col gap-1.5">
+                    <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold ml-1">Password</label>
+                    <input id="password" required
+                        class="flex w-full rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 text-slate-900 dark:text-slate-100 transition-all"
+                        placeholder="••••••••" type="password" />
                 </div>
-                <div class="form-group">
-                    <label>College Name</label>
-                    <input type="text" id="college" required placeholder="Example University">
+
+                <div class="pt-6 pb-12">
+                    <button type="submit"
+                        class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
+                        Create Account
+                    </button>
+                    <p class="text-center text-xs text-slate-500 dark:text-slate-400 mt-4">
+                        Already have an account? <a href="login.html" class="text-primary font-bold">Sign In</a>
+                    </p>
                 </div>
-                <div class="form-group">
-                    <label>Degree</label>
-                    <input type="text" id="degree" required placeholder="B.S. Computer Science">
-                </div>
-                <div class="form-group">
-                    <label>Preferred Domain</label>
-                    <select id="domain">
-                        <option value="software">Software Engineering</option>
-                        <option value="data">Data Science</option>
-                        <option value="design">UI/UX Design</option>
-                        <option value="marketing">Digital Marketing</option>
-                    </select>
-                </div>
-                <div class="form-group full-width">
-                    <label>Skills (Comma separated)</label>
-                    <input type="text" id="skills" placeholder="Python, JavaScript, React, etc.">
-                </div>
-                <div class="form-group">
-                    <label>Portfolio / GitHub URL</label>
-                    <input type="url" id="portfolio" placeholder="https://github.com/johndoe">
-                </div>
-                <div class="form-group">
-                    <label>Preferred Location</label>
-                    <input type="text" id="location" placeholder="Remote, New York, etc.">
-                </div>
-                <div class="form-group full-width">
-                    <label>Experience (Short description)</label>
-                    <textarea id="experience" rows="3"
-                        placeholder="Tell us about your past work or projects..."></textarea>
-                </div>
-            </div>
-            <button type="submit" class="submit-btn" id="signupBtn">Complete Registration</button>
-        </form>
+            </form>
+        </div>
     </div>
 
     <script type="module">
@@ -138,43 +96,24 @@
 
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const submitBtn = document.getElementById('signupBtn');
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Creating Profile...";
-
             const email = document.getElementById('email').value;
-            // Simple default password for demo purposes, in real app, add password field
-            const password = "password123";
+            const password = document.getElementById('password').value;
+            const name = document.getElementById('name').value;
 
             try {
-                // 1. Create User in Firebase Auth
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
-                // 2. Store Profile Data in Firestore
-                const profileData = {
-                    fullName: document.getElementById('fullName').value,
+                // Save profile to Firestore
+                await setDoc(doc(db, "users", user.uid), {
+                    name: name,
                     email: email,
-                    phone: document.getElementById('phone').value,
-                    college: document.getElementById('college').value,
-                    degree: document.getElementById('degree').value,
-                    domain: document.getElementById('domain').value,
-                    skills: document.getElementById('skills').value,
-                    portfolio: document.getElementById('portfolio').value,
-                    location: document.getElementById('location').value,
-                    experience: document.getElementById('experience').value,
                     createdAt: new Date().toISOString()
-                };
+                });
 
-                await setDoc(doc(db, "users", user.uid), profileData);
-
-                alert('Account created successfully! Your default password is: password123');
                 window.location.href = 'index.html';
             } catch (error) {
-                console.error("Error during signup:", error);
-                alert("Error: " + error.message);
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Complete Registration";
+                alert(error.message);
             }
         });
     </script>

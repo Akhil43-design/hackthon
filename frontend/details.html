@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Internship Details - InternHub</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b6cee",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+    <div
+        class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden">
+        <!-- Header -->
+        <div
+            class="sticky top-0 z-50 flex items-center bg-white/80 dark:bg-background-dark/80 backdrop-blur-md p-4 justify-between border-b border-slate-200 dark:border-slate-800">
+            <div onclick="window.history.back()"
+                class="text-slate-900 dark:text-slate-100 flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </div>
+            <h2
+                class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center">
+                Internship Details</h2>
+            <div class="flex w-10 items-center justify-end">
+                <button
+                    class="flex items-center justify-center rounded-full h-10 w-10 bg-transparent text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <span class="material-symbols-outlined">share</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="detailsContainer">
+            <!-- Dynamic Content Loaded Here -->
+            <div class="flex items-center justify-center p-20">
+                <p>Loading details...</p>
+            </div>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div
+            class="fixed bottom-0 left-0 right-0 p-4 bg-white/90 dark:bg-background-dark/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 flex gap-4">
+            <a id="applyBtn" href="#" target="_blank"
+                class="flex-1 bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2">
+                Apply Now
+                <span class="material-symbols-outlined text-lg">arrow_forward</span>
+            </a>
+            <button
+                class="flex items-center justify-center w-14 h-14 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
+                <span class="material-symbols-outlined">bookmark</span>
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        const params = new URLSearchParams(window.location.search);
+        const internData = JSON.parse(decodeURIComponent(params.get('data')));
+
+        if (internData) {
+            document.getElementById('detailsContainer').innerHTML = `
+                <!-- Hero Section -->
+                <div class="flex p-6 @container bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+                    <div class="flex w-full flex-col gap-6 items-center">
+                        <div class="flex gap-4 flex-col items-center">
+                            <div class="bg-primary/10 rounded-2xl p-4 flex items-center justify-center">
+                                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-xl h-24 w-24 shadow-sm" style='background-image: url("https://ui-avatars.com/api/?name=${internData.company}&background=random");'></div>
+                            </div>
+                            <div class="flex flex-col items-center justify-center gap-1">
+                                <p class="text-slate-900 dark:text-white text-2xl font-bold leading-tight tracking-[-0.015em] text-center">${internData.title}</p>
+                                <p class="text-primary font-semibold text-lg">${internData.company} • ${internData.location}</p>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="bg-primary/10 text-primary text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">${internData.domain}</span>
+                                    <span class="text-slate-500 dark:text-slate-400 text-sm font-medium">• Source: ${internData.source}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="flex flex-wrap gap-3 p-4">
+                    <div class="flex min-w-[100px] flex-1 flex-col gap-1 rounded-2xl p-4 bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-medium uppercase tracking-wider">Deadline</p>
+                        <p class="text-rose-500 text-lg font-bold">${internData.deadline}</p>
+                    </div>
+                </div>
+
+                <div class="px-4 pb-24 space-y-8 mt-6">
+                    <section>
+                        <h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-[-0.015em] mb-3">Description</h2>
+                        <p class="text-slate-600 dark:text-slate-300 text-base leading-relaxed">
+                            ${internData.description || 'No description provided. Click apply to learn more on the official website.'}
+                        </p>
+                    </section>
+                </div>
+            `;
+            document.getElementById('applyBtn').href = internData.apply_link;
+        }
+    </script>
+</body>
+
+</html>

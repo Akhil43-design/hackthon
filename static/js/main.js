@@ -1,209 +1,132 @@
-import { auth, db } from "/firebase_config/config.js";
+import { auth, db } from "../firebase_config/config.js";
 import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { doc, getDoc, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const API_BASE_URL = '/api';
+const API_URL = "https://intern-hub-orcin.vercel.app/api";
+
+// DOM Elements
+const internshipContainer = document.getElementById('internshipContainer');
+const newsContainer = document.getElementById('newsContainer');
+const recommendationContainer = document.getElementById('recommendationContainer');
+const userNameEl = document.getElementById('userName');
+const authBtn = document.getElementById('authBtn');
+
+// Initialize State
 let currentUser = null;
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Monitor Auth State
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUser = user;
-            updateAuthUI(true);
-            loadRecommendations(user.uid);
-        } else {
-            currentUser = null;
-            updateAuthUI(false);
-        }
-    });
+// Auth State Listener
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        currentUser = user;
+        authBtn.innerText = "Sign Out";
+        authBtn.onclick = () => signOut(auth).then(() => window.location.reload());
 
-    loadInternships();
-    loadNews();
+        // Fetch profile
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            userNameEl.innerText = `Hi, ${data.name || 'User'}`;
+            document.getElementById('userAvatar').src = `https://ui-avatars.com/api/?name=${data.name}&background=random`;
+            loadRecommendations(data);
+        }
+    } else {
+        authBtn.innerText = "Sign In";
+        authBtn.onclick = () => window.location.href = 'login.html';
+        userNameEl.innerText = "Welcome";
+        recommendationContainer.innerHTML = '<p class="text-slate-400 text-xs p-4 italic">Sign in to see personalized recommendations!</p>';
+    }
 });
 
-function updateAuthUI(isLoggedIn) {
-    const authActions = document.querySelector('.auth-actions');
-    if (!authActions) return;
+// Load All Internships
+async function loadInternships() {
+    try {
+        const response = await fetch(`${API_URL}/internships`);
+        const internships = await response.json();
 
-    if (isLoggedIn) {
-        authActions.innerHTML = `
-            <span style="margin-right: 1rem; font-weight: 600; color: var(--secondary);">Welcome Back</span>
-            <button class="auth-btn" id="logoutBtn" style="background-color: var(--secondary);">Sign Out</button>
-        `;
-        document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
-    } else {
-        authActions.innerHTML = `
-            <a href="login.html" class="auth-btn">Sign In</a>
-            <a href="signup.html" class="auth-btn" style="background-color: var(--secondary); margin-left: 0.5rem;">Sign Up</a>
-        `;
+        internshipContainer.innerHTML = internships.map(intern => `
+            <div class="flex items-center gap-4 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-primary transition-all cursor-pointer" 
+                 onclick="window.location.href='details.html?data=${encodeURIComponent(JSON.stringify(intern))}'">
+                <div class="size-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+                    <img src="https://ui-avatars.com/api/?name=${intern.company}&background=random" class="w-8 h-8 object-contain">
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-slate-900 dark:text-slate-100 font-bold text-sm uppercase">${intern.title}</h4>
+                    <p class="text-slate-500 dark:text-slate-400 text-xs">${intern.company} • ${intern.location}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-primary font-bold text-[10px] uppercase">${intern.domain}</p>
+                    <p class="text-slate-400 text-[10px]">Active</p>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.error("Error loading internships:", error);
+        internshipContainer.innerHTML = '<p class="text-red-500">Failed to load internships.</p>';
     }
 }
 
-async function loadRecommendations(uid) {
+// Load Recommendations
+async function loadRecommendations(profile) {
     try {
-        const userDoc = await getDoc(doc(db, "users", uid));
-        if (userDoc.exists()) {
-            const userData = userDoc.data();
-            const response = await fetch(`${API_BASE_URL}/recommendations`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userData)
-            });
-            const recommendations = await response.json();
+        const response = await fetch(`${API_URL}/recommendations`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ skills: profile.skills || '', domain: profile.domain || '' })
+        });
+        const recommendations = await response.json();
 
-            if (recommendations.length > 0) {
-                const container = document.getElementById('internshipContainer');
-
-                // Remove existing recommendation section if any
-                const existingRec = document.getElementById('recommendationSection');
-                if (existingRec) existingRec.remove();
-
-                const recSection = document.createElement('div');
-                recSection.id = 'recommendationSection';
-                recSection.innerHTML = `
-                    <h2 style="color: var(--accent); margin-top: 2rem;">
-                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                         Recommended for You
-                    </h2>
-                    <div id="recommendationList"></div>
-                `;
-                container.prepend(recSection);
-
-                const list = document.getElementById('recommendationList');
-                recommendations.forEach(intern => {
-                    list.innerHTML += createInternshipCard(intern, true);
-                });
-            }
+        if (recommendations.length === 0) {
+            recommendationContainer.innerHTML = '<p class="text-slate-400 text-xs p-4">Add skills to your profile for matches!</p>';
+            return;
         }
+
+        recommendationContainer.innerHTML = recommendations.slice(0, 5).map(intern => `
+            <div class="flex flex-col min-w-[280px] bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:border-primary transition-all cursor-pointer"
+                 onclick="window.location.href='details.html?data=${encodeURIComponent(JSON.stringify(intern))}'">
+                <div class="relative w-full aspect-[16/9] mb-4 overflow-hidden rounded-lg bg-slate-100">
+                    <img src="https://ui-avatars.com/api/?name=${intern.company}&background=random&size=200" class="w-full h-full object-cover">
+                    <div class="absolute top-2 right-2 bg-primary/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">
+                        ${intern.recommendation_score} Match
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-slate-900 dark:text-slate-100 font-bold text-base line-clamp-1">${intern.title}</h3>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mb-3">${intern.company} • ${intern.location}</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-semibold rounded">${intern.domain}</span>
+                        <span class="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-500 text-[10px] font-semibold rounded">${intern.deadline}</span>
+                    </div>
+                </div>
+            </div>
+        `).join('');
     } catch (error) {
         console.error("Error loading recommendations:", error);
     }
 }
 
-async function bookmarkInternship(internId, internData) {
-    if (!currentUser) {
-        alert("Please sign in to bookmark internships.");
-        window.location.href = "login.html";
-        return;
-    }
-
-    try {
-        await addDoc(collection(db, "bookmarks"), {
-            user_id: currentUser.uid,
-            internship_id: internId,
-            internship_data: internData,
-            saved_at: serverTimestamp()
-        });
-        alert("Internship bookmarked!");
-    } catch (error) {
-        console.error("Error saving bookmark:", error);
-    }
-}
-
-async function loadInternships() {
-    const container = document.getElementById('internshipContainer');
-    try {
-        const response = await fetch(`${API_BASE_URL}/internships`);
-        const data = await response.json();
-
-        // Don't clear if recommendations are there
-        const listContainer = document.createElement('div');
-        listContainer.id = 'allInternshipsList';
-
-        if (data.length === 0) {
-            listContainer.innerHTML = '<p>No internships found.</p>';
-        } else {
-            data.forEach(intern => {
-                listContainer.innerHTML += createInternshipCard(intern);
-            });
-        }
-
-        const existingList = document.getElementById('allInternshipsList');
-        if (existingList) existingList.replaceWith(listContainer);
-        else container.appendChild(listContainer);
-
-    } catch (error) {
-        console.error('Error loading internships:', error);
-        container.innerHTML = '<p>Error loading internships. Please try again later.</p>';
-    }
-}
-
+// Load News
 async function loadNews() {
-    const container = document.getElementById('newsContainer');
     try {
-        const response = await fetch(`${API_BASE_URL}/news`);
-        const data = await response.json();
+        const response = await fetch(`${API_URL}/news`);
+        const news = await response.json();
 
-        container.innerHTML = '';
-        if (data.length === 0) {
-            container.innerHTML = '<p>No news available.</p>';
-            return;
-        }
-
-        data.forEach(item => {
-            container.innerHTML += `
-                <div class="card news-card">
-                    <h3>${item.title}</h3>
-                    <p>${item.description}</p>
-                    <a href="${item.link}" target="_blank">Read more &rarr;</a>
+        newsContainer.innerHTML = news.map(item => `
+            <div class="group relative flex flex-col gap-2">
+                <div class="w-full h-40 rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-800">
+                    <img src="https://ui-avatars.com/api/?name=News&background=random" class="w-full h-full object-cover">
                 </div>
-            `;
-        });
+                <p class="text-[10px] font-bold text-primary uppercase tracking-widest">Tech Update</p>
+                <h3 class="text-slate-900 dark:text-slate-100 font-bold text-lg leading-snug">${item.title}</h3>
+                <p class="text-slate-500 dark:text-slate-400 text-sm line-clamp-2">${item.description}</p>
+                <a href="${item.link}" target="_blank" class="text-primary text-xs font-bold hover:underline">Read Story</a>
+            </div>
+        `).join('');
     } catch (error) {
-        console.error('Error loading news:', error);
-        container.innerHTML = '<p>Error loading news.</p>';
+        console.error("Error loading news:", error);
     }
 }
 
-function createInternshipCard(intern, isRecommended = false) {
-    const daysRemaining = calculateDeadline(intern.deadline);
-    let deadlineBadge = '';
-
-    if (daysRemaining !== null) {
-        if (daysRemaining <= 5 && daysRemaining >= 0) {
-            deadlineBadge = `<span class="deadline-tag">Deadline in ${daysRemaining} days</span>`;
-        } else if (daysRemaining < 0) {
-            deadlineBadge = `<span class="deadline-tag" style="background: #e2e8f0; color: #64748b;">Closed</span>`;
-        }
-    }
-
-    const cardClass = isRecommended ? 'card internship-card recommended' : 'card internship-card';
-
-    return `
-        <div class="${cardClass}" style="${isRecommended ? 'border-left-color: var(--accent);' : ''}">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <div>
-                    <h3>${intern.title}</h3>
-                    <span class="company-name">${intern.company}</span>
-                </div>
-                ${deadlineBadge}
-            </div>
-            <div class="meta-info">
-                <span>📍 ${intern.location}</span>
-                <span>💼 ${intern.domain}</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 0.75rem; color: var(--secondary);">Source: ${intern.source}</span>
-                <div>
-                    <button onclick="bookmarkInternship('${intern.id || Math.random()}', ${JSON.stringify(intern).replace(/"/g, '&quot;')})" style="background: none; border: none; cursor: pointer; color: var(--secondary); margin-right: 0.5rem;" title="Bookmark">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-                    </button>
-                    <a href="${intern.apply_link}" class="apply-btn" target="_blank">Apply Now</a>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// Global scope for onclick
-window.bookmarkInternship = bookmarkInternship;
-
-function calculateDeadline(deadlineStr) {
-    if (!deadlineStr) return null;
-    const deadline = new Date(deadlineStr);
-    const today = new Date();
-    const diffTime = deadline - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-}
+// Global Initialization
+loadInternships();
+loadNews();
