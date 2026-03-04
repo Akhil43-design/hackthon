@@ -143,6 +143,7 @@ async function loadInternships() {
         const response = await fetch(`${API_URL}/internships`);
         allInternships = await response.json();
         renderInternships(allInternships);
+        console.log("✅ Internships loaded successfully from all sources");
     } catch (error) {
         console.error("Error loading internships:", error);
         internshipContainer.innerHTML = '<p class="text-red-500 p-8 col-span-full text-center">Failed to load internships. Please try again.</p>';

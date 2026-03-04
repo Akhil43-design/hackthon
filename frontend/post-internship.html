@@ -197,12 +197,17 @@
 
             try {
                 await addDoc(collection(db, "internships_posted"), data);
+                console.log("✅ Internship posted successfully to Firestore");
                 success.style.display = 'block';
                 document.getElementById('postInternshipForm').reset();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (error) {
-                console.error("Error posting internship:", error);
-                alert("Error: " + error.message);
+                console.error("❌ Error posting internship:", error);
+                if (error.message.includes("API is disabled")) {
+                    alert("Error: Firestore API is disabled. Please enable it in Firebase Console.");
+                } else {
+                    alert("Error: " + error.message);
+                }
             } finally {
                 btn.disabled = false;
                 btn.innerText = 'Post Internship';

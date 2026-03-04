@@ -13,15 +13,25 @@ const firebaseConfig = {
     appId: "1:874712769258:web:cc45dab25669875efe2d93"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+let app, auth, db;
 
-console.log("🔥 Firebase Config: Initializing Firestore with Long Polling fix...");
+try {
+    // Initialize Firebase
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
 
-// Hardened Firestore initialization to bypass aggressive ad-blockers
-const db = initializeFirestore(app, {
-    experimentalForceLongPolling: true
-});
+    // Hardened Firestore initialization to bypass aggressive ad-blockers and connection issues
+    db = initializeFirestore(app, {
+        experimentalForceLongPolling: true
+    });
 
-export { auth, db };
+    console.log("✅ Firebase initialized successfully");
+    console.log("🔗 Firestore connected with long-polling mode enabled");
+} catch (error) {
+    console.error("❌ Firebase initialization failed:", error);
+    if (error.message.includes("API is disabled")) {
+        console.error("🚨 CRITICAL: Firestore API is disabled in the Google Cloud Console.");
+    }
+}
+
+export { auth, db, app };
