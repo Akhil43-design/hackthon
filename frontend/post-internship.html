@@ -165,7 +165,7 @@
     </div>
 
     <script type="module">
-        import { db } from "/firebase_config/config.js";
+        import { db } from "/firebase_config/config.js?v=3";
         import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Manual Session Check
@@ -196,16 +196,18 @@
             };
 
             try {
-                // Store in Firestore
                 await addDoc(collection(db, "internships_posted"), data);
                 console.log("✅ Internship posted successfully to Firestore");
-
                 success.style.display = 'block';
                 document.getElementById('postInternshipForm').reset();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (error) {
                 console.error("❌ Error posting internship:", error);
-                alert("Error: " + error.message);
+                if (error.message.includes("API is disabled")) {
+                    alert("Error: Firestore API is disabled. Please enable it in Firebase Console.");
+                } else {
+                    alert("Error: " + error.message);
+                }
             } finally {
                 btn.disabled = false;
                 btn.innerText = 'Post Internship';

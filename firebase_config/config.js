@@ -14,15 +14,25 @@ const firebaseConfig = {
     measurementId: "G-5E0GG6ZCEW"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+let app, auth, db;
 
-// Use long polling for better resilience against ad-blockers/proxies
-const db = initializeFirestore(app, {
-    experimentalForceLongPolling: true
-});
+try {
+    // Initialize Firebase
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
 
-console.log("✅ Firebase initialized successfully");
+    // Hardened Firestore initialization to bypass aggressive ad-blockers and connection issues
+    db = initializeFirestore(app, {
+        experimentalForceLongPolling: true
+    });
+
+    console.log("✅ Firebase initialized successfully");
+    console.log("🔗 Firestore connected with long-polling mode enabled");
+} catch (error) {
+    console.error("❌ Firebase initialization failed:", error);
+    if (error.message.includes("API is disabled")) {
+        console.error("🚨 CRITICAL: Firestore API is disabled in the Google Cloud Console.");
+    }
+}
 
 export { auth, db, app };

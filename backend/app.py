@@ -1,41 +1,43 @@
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
-import uuid
-from datetime import datetime
+from backend.services import api_source1, api_source2, featured_source
 import firebase_admin
 from firebase_admin import credentials, firestore
-from backend.services import api_source1, api_source2, featured_source
-from backend.utils.storage_manager import storage
 
 # Initialize Firebase Admin
-# Note: Ensure serviceAccountKey.json exists in firebase_config/
-# If not, the server will fall back to local storage only for aggregation
 try:
-    cred = credentials.Certificate('firebase_config/serviceAccountKey.json')
-    firebase_admin.initialize_app(cred)
-    db_admin = firestore.client()
-    print("✅ Firebase Admin initialized successfully")
+    if not firebase_admin._apps:
+        # Check multiple possible paths for the service account key
+        paths_to_try = [
+            'backend/firebase_config/serviceAccountKey.json',
+            'firebase_config/serviceAccountKey.json',
+            'serviceAccountKey.json'
+        ]
+        cert_path = None
+        for p in paths_to_try:
+            if os.path.exists(p):
+                cert_path = p
+                break
+                
+        if cert_path:
+            cred = credentials.Certificate(cert_path)
+            firebase_admin.initialize_app(cred)
+            db = firestore.client()
+            print(f"Firestore initialized successfully from {cert_path}")
+        else:
+            print("Warning: Service account key not found. Using default app or skipping Firestore.")
+            try:
+                firebase_admin.initialize_app()
+                db = firestore.client()
+            except:
+                db = None
 except Exception as e:
-    print(f"⚠️ Firebase Admin initialization failed: {e}")
-    db_admin = None
+    print(f"Firestore Initialization Error: {e}")
+    db = None
 
-app = Flask(__name__, static_folder='../static')
+app = Flask(__name__)
 CORS(app)
-
-# Serve Frontend
-@app.route('/')
-def serve_index():
-    return send_from_directory('../frontend', 'index.html')
-
-@app.route('/<path:path>')
-def serve_frontend_files(path):
-    # Search in order: frontend, static, firebase_config
-    search_dirs = ['../frontend', '../static', '../firebase_config', '..']
-    for d in search_dirs:
-        if os.path.exists(os.path.join(d, path)):
-            return send_from_directory(d, path)
-    return "File not found", 404
 
 # Global Error Handler to return JSON instead of HTML
 @app.errorhandler(Exception)
@@ -50,7 +52,7 @@ def handle_exception(e):
 def health_check():
     return jsonify({"status": "InternHub Backend is running", "version": "1.0.0"})
 
-@app.route('/hub/internships', methods=['GET'])
+@app.route('/api/internships', methods=['GET'])
 def get_internships():
     # Fetch from multiple sources
     results = []
@@ -65,9 +67,10 @@ def get_internships():
     results.extend(api_source1.fetch_internships())
     
     # 3. Fetch from Community Submissions (Firestore)
-    if db_admin:
+    if db:
         try:
-            docs = db_admin.collection('internships_posted').stream()
+            submissions_ref = db.collection('internships_posted')
+            docs = submissions_ref.stream()
             for doc in docs:
                 data = doc.to_dict()
                 results.append({
@@ -78,29 +81,16 @@ def get_internships():
                     "description": data.get('description'),
                     "deadline": data.get('deadline'),
                     "apply_link": data.get('apply_link'),
-                    "source": "Cloud Submission"
+                    "source": "Company Submission"
                 })
         except Exception as e:
-            print(f"⚠️ Failed to fetch from Firestore: {e}")
-
-    # 4. Fetch from Community Submissions (Local Storage Fallback)
-    local_submissions = storage.read('internships_posted.json') or []
-    for data in local_submissions:
-        results.append({
-            "title": data.get('title'),
-            "company": data.get('company'),
-            "location": data.get('location'),
-            "domain": data.get('domain'),
-            "description": data.get('description'),
-            "deadline": data.get('deadline'),
-            "apply_link": data.get('apply_link'),
-            "source": "Local Submission"
-        })
+            print(f"Error fetching from Firestore: {e}")
 
     # Simple de-duplication based on title and company
     unique_results = []
     seen = set()
     for item in results:
+        # Some items might not have title or company if corrupted
         title = item.get('title', '').lower()
         company = item.get('company', '').lower()
         key = (title, company)
@@ -111,71 +101,35 @@ def get_internships():
             
     return jsonify(unique_results)
 
-@app.route('/hub/signup', methods=['POST'])
-def signup():
-    data = request.json
-    email = data.get('email')
+@app.route('/api/internships/search', methods=['GET'])
+def search_internships():
+    query = request.args.get('q', '').lower()
+    domain = request.args.get('domain', '').lower()
+    location = request.args.get('location', '').lower()
     
-    if storage.get_user_by_email(email):
-        return jsonify({"error": "User already exists"}), 400
-        
-    user_id = str(uuid.uuid4())
-    user_data = {
-        "id": user_id,
-        "email": email,
-        "password": data.get('password'),
-        "name": data.get('name'),
-        "phone": data.get('phone'),
-        "university": data.get('university'),
-        "degree": data.get('degree'),
-        "gradYear": data.get('gradYear'),
-        "cgpa": data.get('cgpa'),
-        "skills": data.get('skills'),
-        "bio": data.get('bio'),
-        "createdAt": datetime.now().isoformat()
-    }
+    all_internships = get_internships().get_json()
     
-    storage.save_user(user_data)
-    return jsonify({"message": "User created", "id": user_id, "name": user_data['name']}), 201
-
-@app.route('/hub/login', methods=['POST'])
-def login():
-    data = request.json
-    email = data.get('email')
-    password = data.get('password')
+    filtered = [
+        item for item in all_internships
+        if (query in item['title'].lower() or query in item['company'].lower())
+        and (not domain or domain in item['domain'].lower())
+        and (not location or location in item['location'].lower())
+    ]
     
-    user = storage.get_user_by_email(email)
-    if user and user['password'] == password:
-        return jsonify({"id": user['id'], "name": user['name'], "email": user['email']}), 200
-        
-    return jsonify({"error": "Invalid credentials"}), 401
+    return jsonify(filtered)
 
-@app.route('/hub/post-internship', methods=['POST'])
-def post_internship():
-    data = request.json
-    storage.save_internship(data)
-    return jsonify({"message": "Internship posted successfully"}), 201
-
-@app.route('/hub/bookmarks', methods=['GET'])
-def get_bookmarks():
-    user_id = request.args.get('userId')
-    if not user_id:
-        return jsonify({"error": "UserId required"}), 400
-    return jsonify(storage.get_bookmarks(user_id))
-
-@app.route('/hub/bookmarks/toggle', methods=['POST'])
-def toggle_bookmark():
-    data = request.json
-    user_id = data.get('userId')
-    internship = data.get('internship')
+@app.route('/api/bookmarks', methods=['GET', 'POST'])
+def manage_bookmarks():
+    # Placeholder for Firestore logic
+    if request.method == 'POST':
+        data = request.json
+        # db.collection('bookmarks').add(data)
+        return jsonify({"message": "Bookmark saved successfully"}), 201
     
-    if not user_id or not internship:
-        return jsonify({"error": "Missing data"}), 400
-        
-    is_added = storage.toggle_bookmark(user_id, internship)
-    return jsonify({"is_added": is_added})
+    # Mock return for GET
+    return jsonify([])
 
-@app.route('/hub/recommendations', methods=['POST'])
+@app.route('/api/recommendations', methods=['POST'])
 def get_recommendations():
     user_data = request.json
     skills = [s.strip().lower() for s in user_data.get('skills', '').split(',')]
@@ -204,7 +158,7 @@ def get_recommendations():
     
     return jsonify(recommendations)
 
-@app.route('/hub/news', methods=['GET'])
+@app.route('/api/news', methods=['GET'])
 def get_news():
     news = [
         {
