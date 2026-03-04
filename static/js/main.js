@@ -81,7 +81,7 @@ function renderInternships(internships) {
         const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(intern.company)}&background=random&color=fff`;
 
         return `
-            <div class="flex-none w-[320px] bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 hover:border-primary/50 transition-all cursor-pointer snap-center group"
+            <div class="bg-white dark:bg-slate-900 p-8 rounded-[2rem] shadow-sm border border-slate-100 dark:border-slate-800 hover:border-primary/50 hover:shadow-xl transition-all cursor-pointer group flex flex-col h-full"
                  onclick="window.location.href='details.html?data=${encodeURIComponent(JSON.stringify(intern))}'">
                 <div class="flex items-start justify-between mb-8">
                     <div class="size-16 rounded-2xl bg-white dark:bg-slate-800 flex items-center justify-center p-2 shadow-sm border border-slate-50 dark:border-slate-700">
@@ -96,8 +96,8 @@ function renderInternships(internships) {
                 </div>
                 <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2 leading-tight">${intern.title}</h3>
                 <p class="text-sm text-slate-500 dark:text-slate-400 mb-8 font-medium">${intern.company} • ${intern.location}</p>
-                <div class="flex items-center justify-between mt-auto">
-                    <span class="text-xs font-semibold text-slate-400">Posted Recently</span>
+                <div class="flex items-center justify-between mt-auto pt-4 border-t border-slate-50 dark:border-slate-800">
+                    <span class="text-xs font-semibold text-slate-400">Apply Today</span>
                     <button class="text-primary font-bold text-sm flex items-center gap-1 group-hover:gap-2 transition-all">
                         Apply Now <span class="material-symbols-outlined text-sm">open_in_new</span>
                     </button>
@@ -148,22 +148,30 @@ async function loadNews() {
         allNews = await response.json();
 
         newsContainer.innerHTML = allNews.map(item => `
-            <div class="group bg-white dark:bg-slate-900 rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 dark:border-slate-800 flex flex-col">
-                <div class="aspect-video w-full bg-slate-200 dark:bg-slate-800 overflow-hidden relative">
+            <div class="flex-none w-[280px] group bg-white dark:bg-slate-900 rounded-[1.25rem] overflow-hidden shadow-sm hover:shadow-lg transition-all border border-slate-100 dark:border-slate-800 flex flex-col snap-center">
+                <div class="aspect-[16/10] w-full bg-slate-200 dark:bg-slate-800 overflow-hidden relative">
                     <img src="${item.image || 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=1000'}" 
-                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                    <p class="absolute bottom-3 left-4 text-[9px] font-black text-white uppercase tracking-widest opacity-90">Insights</p>
                 </div>
-                <div class="p-6 flex-1 flex flex-col">
-                    <p class="text-[10px] font-bold text-primary mb-3 uppercase tracking-widest">Tech Update</p>
-                    <h3 class="text-lg font-bold leading-tight text-slate-900 dark:text-white mb-3 group-hover:text-primary transition-colors">${item.title}</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-6 flex-1">${item.description}</p>
-                    <a href="${item.link}" target="_blank" class="text-primary text-sm font-bold flex items-center gap-1 hover:gap-2 transition-all">
-                        Read Story <span class="material-symbols-outlined text-sm">arrow_right_alt</span>
+                <div class="p-5 flex-1 flex flex-col">
+                    <h3 class="text-base font-bold leading-tight text-slate-900 dark:text-white mb-2 group-hover:text-primary transition-colors line-clamp-2">${item.title}</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-4 flex-1">${item.description}</p>
+                    <a href="${item.link}" target="_blank" class="text-primary text-[11px] font-black flex items-center gap-1 hover:gap-2 transition-all mt-auto uppercase tracking-wider">
+                        Quick Read <span class="material-symbols-outlined text-xs">arrow_forward</span>
                     </a>
                 </div>
             </div>
         `).join('');
+
+        // Wire up news scroll buttons
+        const newsLeft = document.getElementById('newsScrollLeft');
+        const newsRight = document.getElementById('newsScrollRight');
+        if (newsLeft && newsRight) {
+            newsLeft.onclick = () => newsContainer.scrollBy({ left: -300, behavior: 'smooth' });
+            newsRight.onclick = () => newsContainer.scrollBy({ left: 300, behavior: 'smooth' });
+        }
     } catch (error) {
         console.error("Error loading news:", error);
     }
@@ -254,8 +262,8 @@ async function init() {
     await loadInternships();
     await loadNews();
 
-    const internContainer = document.getElementById('internshipContainer');
-    if (internContainer) initAutoScroll(internContainer);
+    const nContainer = document.getElementById('newsContainer');
+    if (nContainer) initAutoScroll(nContainer);
 }
 
 init();

@@ -93,44 +93,44 @@
             </div>
         </section>
 
-        <!-- Latest Tech News Section -->
-        <section>
+        <!-- Trending Internships Section -->
+        <section id="internshipsSection">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Latest Tech News</h2>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Stay updated with the latest in tech</p>
+                    <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">Trending
+                        Internships</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">AI-matched opportunities updated in
+                        real-time</p>
                 </div>
                 <a class="text-primary text-sm font-bold flex items-center gap-1 hover:underline" href="#">
                     View all <span class="material-symbols-outlined text-sm">arrow_forward</span>
                 </a>
             </div>
-            <div id="newsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                <!-- Dynamic News Cards -->
+            <div id="internshipContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Dynamic Internship Cards (Grid) -->
             </div>
         </section>
 
-        <!-- Trending Internships Section -->
-        <section>
+        <!-- Latest Tech News Section -->
+        <section id="newsSection">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Trending Internships
-                    </h2>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">AI-matched opportunities based on early
-                        industry trends</p>
+                    <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Tech Insights</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Brief updates from the tech world</p>
                 </div>
                 <div class="flex gap-3">
-                    <button
+                    <button id="newsScrollLeft"
                         class="size-10 flex items-center justify-center rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 transition-all shadow-sm">
                         <span class="material-symbols-outlined">chevron_left</span>
                     </button>
-                    <button
+                    <button id="newsScrollRight"
                         class="size-10 flex items-center justify-center rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 transition-all shadow-sm">
                         <span class="material-symbols-outlined">chevron_right</span>
                     </button>
                 </div>
             </div>
-            <div id="internshipContainer" class="flex gap-8 overflow-x-auto hide-scrollbar pb-8 snap-x snap-mandatory">
-                <!-- Dynamic Internship Cards -->
+            <div id="newsContainer" class="flex gap-6 overflow-x-auto no-scrollbar pb-8 snap-x snap-mandatory">
+                <!-- Dynamic News Cards (Horizontal Scroll) -->
             </div>
         </section>
     </main>
