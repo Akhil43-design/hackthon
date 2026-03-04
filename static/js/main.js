@@ -1,5 +1,4 @@
-import { auth, db } from "/firebase_config/config.js";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { db } from "/firebase_config/config.js?v=3";
 import { doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const API_URL = "https://intern-hub-orcin.vercel.app/api";
@@ -17,13 +16,17 @@ let allInternships = [];
 let allNews = [];
 let currentFilter = 'all';
 
-// Auth State Listener
-onAuthStateChanged(auth, async (user) => {
-    if (user) {
-        currentUser = user;
+// Manual Session Check (instead of onAuthStateChanged)
+function checkAuth() {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+        currentUser = JSON.parse(savedUser);
         if (authBtn) {
             authBtn.innerText = "Sign Out";
-            authBtn.onclick = () => signOut(auth).then(() => window.location.reload());
+            authBtn.onclick = () => {
+                localStorage.removeItem('user');
+                window.location.reload();
+            };
         }
     } else {
         currentUser = null;
@@ -32,7 +35,9 @@ onAuthStateChanged(auth, async (user) => {
             authBtn.onclick = () => window.location.href = 'login.html';
         }
     }
-});
+}
+
+checkAuth();
 
 // Skeleton Loader HTML
 const getSkeletonHTML = (count = 4) => {
@@ -203,7 +208,7 @@ export async function toggleBookmark(internship) {
     }
 
     const internId = btoa(`${internship.company}-${internship.title}`).replace(/[/+=]/g, '');
-    const bookmarkRef = doc(db, `users/${currentUser.uid}/bookmarks`, internId);
+    const bookmarkRef = doc(db, `users/${currentUser.id}/bookmarks`, internId);
 
     try {
         const docSnap = await getDoc(bookmarkRef);
@@ -226,7 +231,7 @@ export async function toggleBookmark(internship) {
 export async function isBookmarked(internship) {
     if (!currentUser) return false;
     const internId = btoa(`${internship.company}-${internship.title}`).replace(/[/+=]/g, '');
-    const bookmarkRef = doc(db, `users/${currentUser.uid}/bookmarks`, internId);
+    const bookmarkRef = doc(db, `users/${currentUser.id}/bookmarks`, internId);
     const docSnap = await getDoc(bookmarkRef);
     return docSnap.exists();
 }
