@@ -14,11 +14,11 @@ def fetch_internships():
     """
     url = "https://jsearch.p.rapidapi.com/search"
     
-    # Broader search for internships
+    # Broader search for internships to get more results
     querystring = {
-        "query": "internships in India",
+        "query": "internships India 2025-2026 software data design",
         "page": "1",
-        "num_pages": "1",
+        "num_pages": "1", # Increase pages to get more results
         "date_posted": "all"
     }
 

@@ -17,8 +17,8 @@ def fetch_internships():
     """
     prompt = """
     Act as a high-precision internship recruitment bot. 
-    Search for and identify 10 CURRENT and SPECIFIC internship openings for 2025-2026. 
-    Target: Software Engineering, Frontend/Backend, Data Science, and DevOps.
+    Search for and identify 20 CURRENT and SPECIFIC internship openings for 2025-2026. 
+    Distribute results across: Software Engineering (5), Data Science/AI (5), Web Development/Frontend (5), and Product/Design (5).
     
     CRITICAL REQUIREMENT: 
     YOU MUST PROVIDE DIRECT LINKS TO THE APPLICATION FORM. 
