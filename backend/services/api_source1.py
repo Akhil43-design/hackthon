@@ -21,19 +21,19 @@ def fetch_internships():
     Target: Software Engineering, Frontend/Backend, Data Science, and DevOps.
     
     CRITICAL REQUIREMENT: 
-    YOU MUST PROVIDE 'DEEP LINKS' TO THE SPECIFIC JOB POSTING. 
-    - AVOID: company.com/careers, linkedin.com/jobs, or indeed.com (general search).
-    - PREFER: Specific job IDs in the URL (e.g., google.com/careers/jobs/12345, amazon.jobs/en/jobs/23456, or direct Lever/Greenhouse/Workday links).
-    - If a specific, direct application URL is not available, DO NOT INCLUDE THAT JOB. 
-    - THE LINK MUST TAKE THE USER DIRECTLY TO THE APPLY BUTTON FOR THAT SPECIFIC ROLE.
+    YOU MUST PROVIDE DIRECT LINKS TO THE APPLICATION FORM. 
+    - EXAMPLE OF CORRECT LINK: https://www.google.com/about/careers/applications/apply/e7f1c162-3290-48ed-8d32-666ded8ce757/form
+    - AVOID: General careers pages, search results, or homepages.
+    - PREFER: URLs ending in /form, /apply, or containing specific job UUIDs/IDs.
+    - THE LINK MUST TAKE THE USER DIRECTLY TO THE START OF THE APPLICATION PROCESS.
     
     For each internship, provide:
     1. title (Job Title)
     2. company (Company Name)
     3. location (City, Country or Remote)
     4. domain (Specific tech stack or field)
-    5. deadline (Specific date if possible, else 'ASAP')
-    6. apply_link (The DIRECT DEEP-LINK URL)
+    5. deadline (Specific date or 'ASAP')
+    6. apply_link (The DIRECT APPLICATION FORM URL)
     
     Return the result ONLY as a JSON list of objects.
     Format:
@@ -45,7 +45,7 @@ def fetch_internships():
         "domain": "Domain",
         "deadline": "YYYY-MM-DD",
         "apply_link": "URL",
-        "source": "AI Deep-Link Bot"
+        "source": "AI Direct-Form Bot"
       }
     ]
     """
@@ -62,14 +62,16 @@ def fetch_internships():
             
         internships = json.loads(text)
         
-        # Validate and filter: Prefer long, specific URLs over short general ones
+        # Validate and filter: Ensure links look like direct application forms
         final_list = []
         for item in internships:
             link = item.get('apply_link', '')
             # Filter out general homepages and simple LinkedIn search links
-            is_general = len(link) < 35 or link.endswith('/careers') or link.endswith('/jobs')
-            if link and not "example.com" in link and not is_general:
-                item['source'] = "AI Deep-Link Bot"
+            # Direct form links are usually longer and specific
+            is_generic = len(link) < 40 or any(x in link.lower() for x in ['/careers', '/jobs', '?q=', 'search']) and not any(y in link.lower() for y in ['/apply', '/form', '/jobs/'])
+            
+            if link and not "example.com" in link and not is_generic:
+                item['source'] = "AI Direct-Form Bot"
                 final_list.append(item)
             
         return final_list if final_list else get_mock_ai_data()
