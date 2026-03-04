@@ -113,8 +113,8 @@
     </main>
 
     <script type="module">
-        import { db } from "/firebase_config/config.js?v=3";
-        import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { auth } from "/firebase_config/config.js";
+        import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         // If already logged in, redirect home
         const savedUser = localStorage.getItem('user');
@@ -132,30 +132,26 @@
             const password = document.getElementById('password').value;
 
             try {
-                // Manual match query
-                const usersRef = collection(db, "users");
-                const q = query(usersRef, where("email", "==", email), where("password", "==", password));
-                const querySnapshot = await getDocs(q);
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                console.log("✅ User logged in successfully:", user.uid);
 
-                if (querySnapshot.empty) {
-                    throw new Error("Invalid email or password.");
-                }
-
-                // Get first matching doc
-                const userDoc = querySnapshot.docs[0];
-                const userData = userDoc.data();
-
-                // Store simplified session in localStorage
+                // For simplicity, store essential info in localStorage
+                // Real apps should use onAuthStateChanged
                 localStorage.setItem('user', JSON.stringify({
-                    id: userDoc.id,
-                    email: userData.email,
-                    name: userData.name
+                    id: user.uid,
+                    email: user.email,
+                    name: user.displayName || user.email.split('@')[0]
                 }));
 
                 window.location.href = 'index.html';
             } catch (error) {
                 console.error("Login error:", error);
-                alert("Login failed: " + error.message);
+                let message = "Invalid email or password.";
+                if (error.code === 'auth/user-not-found') message = "Account not found.";
+                if (error.code === 'auth/wrong-password') message = "Incorrect password.";
+
+                alert(message);
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Sign In";
             }

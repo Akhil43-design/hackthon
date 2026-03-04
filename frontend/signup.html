@@ -143,6 +143,18 @@
                         <input id="github" type="url" placeholder="github.com/username"
                             class="w-full h-14 px-5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 focus:border-primary outline-none transition-all shadow-sm">
                     </div>
+                    <div class="group">
+                        <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Preferred
+                            Domain</label>
+                        <select id="domain"
+                            class="w-full h-14 px-5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 focus:border-primary outline-none transition-all shadow-sm">
+                            <option value="Software Engineering">Software Engineering</option>
+                            <option value="Data Science">Data Science</option>
+                            <option value="UI/UX Design">UI/UX Design</option>
+                            <option value="Product Management">Product Management</option>
+                            <option value="Marketing">Marketing</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -173,9 +185,10 @@
                                 class="w-full h-14 px-5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 focus:border-primary outline-none transition-all shadow-sm">
                         </div>
                         <div class="group">
-                            <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Current
-                                CGPA</label>
-                            <input id="cgpa" type="text" placeholder="9.0/10"
+                            <label
+                                class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-wider">Preferred
+                                Location</label>
+                            <input id="location" type="text" placeholder="Remote / Bengaluru / New York"
                                 class="w-full h-14 px-5 rounded-2xl bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 focus:border-primary outline-none transition-all shadow-sm">
                         </div>
                     </div>
@@ -228,8 +241,9 @@
     </div>
 
     <script type="module">
-        import { db } from "/firebase_config/config.js?v=3";
-        import { collection, addDoc, getDocs, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { auth, db } from "/firebase_config/config.js";
+        import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         let currentStep = 1;
         const totalSteps = 4;
@@ -248,12 +262,14 @@
 
             for (let i = 2; i <= totalSteps; i++) {
                 const label = document.getElementById(`stepLabel${i}`);
-                if (i <= currentStep) {
-                    label.classList.remove('text-slate-400');
-                    label.classList.add('text-primary');
-                } else {
-                    label.classList.add('text-slate-400');
-                    label.classList.remove('text-primary');
+                if (label) {
+                    if (i <= currentStep) {
+                        label.classList.remove('text-slate-400');
+                        label.classList.add('text-primary');
+                    } else {
+                        label.classList.add('text-slate-400');
+                        label.classList.remove('text-primary');
+                    }
                 }
             }
 
@@ -306,46 +322,44 @@
             const password = document.getElementById('password').value;
 
             try {
-                // 1. Check if user already exists in Firestore
-                const usersRef = collection(db, "users");
-                const q = query(usersRef, where("email", "==", email));
-                const querySnapshot = await getDocs(q);
+                // 1. Create User with Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                console.log("✅ User created successfully:", user.uid);
 
-                if (!querySnapshot.empty) {
-                    throw new Error("An account with this email already exists.");
-                }
-
-                // 2. Prepare Profile Data
-                const profileData = {
-                    email: email,
-                    password: password, // Simple manual matching as requested
+                // 2. Store Resume Data in Firestore
+                const resumeData = {
+                    uid: user.uid,
                     name: document.getElementById('name').value,
+                    email: email,
                     phone: document.getElementById('phone').value,
-                    linkedin: document.getElementById('linkedin').value,
-                    github: document.getElementById('github').value,
-                    university: document.getElementById('university').value,
+                    college: document.getElementById('university').value,
                     degree: document.getElementById('degree').value,
-                    gradYear: document.getElementById('gradYear').value,
-                    cgpa: document.getElementById('cgpa').value,
                     skills: document.getElementById('skills').value,
-                    bio: document.getElementById('bio').value,
-                    createdAt: serverTimestamp()
+                    preferred_domain: document.getElementById('domain').value,
+                    experience: document.getElementById('bio').value,
+                    portfolio: document.getElementById('github').value || document.getElementById('linkedin').value,
+                    location: document.getElementById('location').value,
+                    created_at: serverTimestamp()
                 };
 
-                // 3. Save to Firestore
-                const docRef = await addDoc(usersRef, profileData);
+                await setDoc(doc(db, "users", user.uid), resumeData);
+                console.log("✅ Resume data stored in Firestore");
 
-                // 4. Save session to localStorage
                 localStorage.setItem('user', JSON.stringify({
-                    id: docRef.id,
+                    id: user.uid,
                     email: email,
-                    name: profileData.name
+                    name: resumeData.name
                 }));
 
                 window.location.href = 'index.html';
             } catch (error) {
                 console.error("Signup Error:", error);
-                errorEl.innerText = error.message;
+                let message = error.message;
+                if (error.code === 'auth/email-already-in-use') message = "This email is already registered.";
+                if (error.code === 'auth/weak-password') message = "Password should be at least 6 characters.";
+
+                errorEl.innerText = message;
                 errorEl.classList.remove('hidden');
                 submitBtn.disabled = false;
                 submitBtn.innerText = "Complete Profile";

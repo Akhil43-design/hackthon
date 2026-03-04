@@ -1,7 +1,5 @@
-import { db } from "/firebase_config/config.js?v=3";
-import { doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-const API_URL = "https://intern-hub-orcin.vercel.app/api";
+import { db } from "/firebase_config/config.js";
+import { collection, getDocs, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // DOM Elements
 const internshipContainer = document.getElementById('internshipContainer');
@@ -204,40 +202,48 @@ filterBtns.forEach(btn => {
     });
 });
 
-// Bookmark Logic
-export async function toggleBookmark(internship) {
+// Bookmark Functions
+export async function toggleBookmark(id) {
     if (!currentUser) {
         window.location.href = 'login.html';
         return;
     }
 
-    const internId = btoa(`${internship.company}-${internship.title}`).replace(/[/+=]/g, '');
-    const bookmarkRef = doc(db, `users/${currentUser.id}/bookmarks`, internId);
+    const starBtn = document.querySelector(`[onclick^="toggleBookmark"]`);
+    // Note: Since the ID is passed directly, we'll find the button by ID in a real scenario
+    // For now, let's just use the Firestore logic
 
     try {
-        const docSnap = await getDoc(bookmarkRef);
-        if (docSnap.exists()) {
+        const bookmarkRef = doc(db, "users", currentUser.id, "bookmarks", id);
+        // Checking if already bookmarked requires state or a query
+        // For simplicity, let's just toggle or use a check function
+        const isBookmarked = await checkIsBookmarked(id);
+
+        if (isBookmarked) {
             await deleteDoc(bookmarkRef);
-            return false;
+            console.log("✅ Bookmark removed");
         } else {
             await setDoc(bookmarkRef, {
-                ...internship,
-                savedAt: new Date().toISOString()
+                internshipId: id,
+                savedAt: serverTimestamp()
             });
-            return true;
+            console.log("✅ Bookmark added");
         }
+        return !isBookmarked;
     } catch (error) {
         console.error("Error toggling bookmark:", error);
         throw error;
     }
 }
 
-export async function isBookmarked(internship) {
+async function checkIsBookmarked(id) {
     if (!currentUser) return false;
-    const internId = btoa(`${internship.company}-${internship.title}`).replace(/[/+=]/g, '');
-    const bookmarkRef = doc(db, `users/${currentUser.id}/bookmarks`, internId);
-    const docSnap = await getDoc(bookmarkRef);
-    return docSnap.exists();
+    try {
+        const docSnap = await getDoc(doc(db, "users", currentUser.id, "bookmarks", id));
+        return docSnap.exists();
+    } catch (error) {
+        return false;
+    }
 }
 
 // Auto-Scroll Logic
