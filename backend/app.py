@@ -50,7 +50,7 @@ def handle_exception(e):
 def health_check():
     return jsonify({"status": "InternHub Backend is running", "version": "1.0.0"})
 
-@app.route('/api/internships', methods=['GET'])
+@app.route('/hub/internships', methods=['GET'])
 def get_internships():
     # Fetch from multiple sources
     results = []
@@ -111,7 +111,7 @@ def get_internships():
             
     return jsonify(unique_results)
 
-@app.route('/api/signup', methods=['POST'])
+@app.route('/hub/signup', methods=['POST'])
 def signup():
     data = request.json
     email = data.get('email')
@@ -138,7 +138,7 @@ def signup():
     storage.save_user(user_data)
     return jsonify({"message": "User created", "id": user_id, "name": user_data['name']}), 201
 
-@app.route('/api/login', methods=['POST'])
+@app.route('/hub/login', methods=['POST'])
 def login():
     data = request.json
     email = data.get('email')
@@ -150,20 +150,20 @@ def login():
         
     return jsonify({"error": "Invalid credentials"}), 401
 
-@app.route('/api/post-internship', methods=['POST'])
+@app.route('/hub/post-internship', methods=['POST'])
 def post_internship():
     data = request.json
     storage.save_internship(data)
     return jsonify({"message": "Internship posted successfully"}), 201
 
-@app.route('/api/bookmarks', methods=['GET'])
+@app.route('/hub/bookmarks', methods=['GET'])
 def get_bookmarks():
     user_id = request.args.get('userId')
     if not user_id:
         return jsonify({"error": "UserId required"}), 400
     return jsonify(storage.get_bookmarks(user_id))
 
-@app.route('/api/bookmarks/toggle', methods=['POST'])
+@app.route('/hub/bookmarks/toggle', methods=['POST'])
 def toggle_bookmark():
     data = request.json
     user_id = data.get('userId')
@@ -175,7 +175,7 @@ def toggle_bookmark():
     is_added = storage.toggle_bookmark(user_id, internship)
     return jsonify({"is_added": is_added})
 
-@app.route('/api/recommendations', methods=['POST'])
+@app.route('/hub/recommendations', methods=['POST'])
 def get_recommendations():
     user_data = request.json
     skills = [s.strip().lower() for s in user_data.get('skills', '').split(',')]
@@ -204,7 +204,7 @@ def get_recommendations():
     
     return jsonify(recommendations)
 
-@app.route('/api/news', methods=['GET'])
+@app.route('/hub/news', methods=['GET'])
 def get_news():
     news = [
         {
