@@ -20,6 +20,14 @@
       "dest": "backend/app.py"
     },
     {
+      "src": "/static/(.*)",
+      "dest": "static/$1"
+    },
+    {
+      "src": "/firebase_config/(.*)",
+      "dest": "firebase_config/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "frontend/$1"
     }
