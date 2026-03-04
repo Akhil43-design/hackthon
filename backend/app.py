@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
-from backend.services import api_source1, api_source2
+from backend.services import api_source1, api_source2, featured_source
 import firebase_admin
 from firebase_admin import credentials, firestore
 
@@ -56,6 +56,9 @@ def health_check():
 def get_internships():
     # Fetch from multiple sources
     results = []
+    
+    # 0. Fetch Featured Internships (GUARANTEED 10)
+    results.extend(featured_source.fetch_internships())
     
     # 1. Fetch from RapidAPI (Source 2)
     results.extend(api_source2.fetch_internships())
