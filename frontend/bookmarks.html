@@ -7,7 +7,8 @@
     <title>Saved Internships - InternHub</title>
     <link href="/static/css/tailwind.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-25..0"
         rel="stylesheet" />
 </head>
 
@@ -31,24 +32,26 @@
         </main>
 
         <nav
-            class="fixed bottom-0 left-0 right-0 z-50 max-w-[1000px] mx-auto bg-white/90 dark:bg-background-dark/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 px-6 pb-6 pt-3">
-            <div class="flex items-center justify-between">
-                <a class="flex flex-col items-center gap-1 text-slate-400" href="index.html">
+            class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 z-50 px-4 pb-safe pt-2 shadow-2xl">
+            <div class="flex justify-around items-center h-16">
+                <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                    href="index.html">
                     <span class="material-symbols-outlined">home</span>
-                    <span class="text-[10px] font-medium">Home</span>
+                    <span class="text-[10px] font-bold">Home</span>
                 </a>
-                <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
-                    <span class="material-symbols-outlined">explore</span>
-                    <span class="text-[10px] font-medium">Explore</span>
+                <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                    href="index.html">
+                    <span class="material-symbols-outlined">work</span>
+                    <span class="text-[10px] font-bold">Internships</span>
                 </a>
-                <a class="flex flex-col items-center gap-1 text-primary" href="bookmarks.html">
-                    <span class="material-symbols-outlined fill-icon"
-                        style="font-variation-settings: 'FILL' 1;">bookmark</span>
+                <a class="flex flex-col items-center gap-1 text-primary transition-all scale-110" href="bookmarks.html">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bookmark</span>
                     <span class="text-[10px] font-bold">Saved</span>
                 </a>
-                <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
+                <a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-all"
+                    href="login.html">
                     <span class="material-symbols-outlined">person</span>
-                    <span class="text-[10px] font-medium">Profile</span>
+                    <span class="text-[10px] font-bold">Profile</span>
                 </a>
             </div>
         </nav>
