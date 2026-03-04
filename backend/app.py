@@ -1,3 +1,6 @@
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+import os
 from backend.services import api_source1, api_source2
 import firebase_admin
 from firebase_admin import credentials, firestore
