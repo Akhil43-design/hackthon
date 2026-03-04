@@ -14,8 +14,8 @@ def health_check():
 def get_internships():
     # Fetch from multiple sources
     results = []
-    results.extend(api_source1.fetch_internships())
     results.extend(api_source2.fetch_internships())
+    results.extend(api_source1.fetch_internships())
     
     # Simple de-duplication based on title and company
     unique_results = []

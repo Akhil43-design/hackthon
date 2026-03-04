@@ -14,12 +14,12 @@ def fetch_internships():
     """
     url = "https://jsearch.p.rapidapi.com/search"
     
-    # Search for internships in India/Remote
+    # Broader search for internships
     querystring = {
-        "query": "internship in India, software engineering, web development",
+        "query": "internships in India",
         "page": "1",
         "num_pages": "1",
-        "date_posted": "week"
+        "date_posted": "all"
     }
 
     headers = {
@@ -28,20 +28,23 @@ def fetch_internships():
     }
 
     try:
+        print(f"Fetching from RapidAPI JSearch... Key ending in: {RAPIDAPI_KEY[-5:]}")
         response = requests.get(url, headers=headers, params=querystring)
+        print(f"RapidAPI Status: {response.status_code}")
+        
         if response.status_code == 200:
             data = response.json()
             jobs = data.get('data', [])
+            print(f"RapidAPI found {len(jobs)} jobs")
             
             formatted_data = []
             for job in jobs:
-                # JSearch often provides direct apply links or job board links
                 apply_link = job.get('job_apply_link') or job.get('job_google_link')
                 
                 formatted_data.append({
                     "title": job.get('job_title'),
                     "company": job.get('employer_name'),
-                    "location": f"{job.get('job_city', '')}, {job.get('job_country', '')}".strip(', '),
+                    "location": f"{job.get('job_city', '')}, {job.get('job_country', '')}".strip(', ') or "Remote",
                     "domain": job.get('job_employment_type', 'Internship'),
                     "deadline": job.get('job_offer_expiration_datetime_utc', 'ASAP')[:10] if job.get('job_offer_expiration_datetime_utc') else 'ASAP',
                     "apply_link": apply_link,
@@ -49,8 +52,8 @@ def fetch_internships():
                 })
             return formatted_data
         else:
-            print(f"RapidAPI Error: {response.status_code} - {response.text}")
+            print(f"RapidAPI Error Details: {response.text}")
             return []
     except Exception as e:
-        print(f"Error fetching from RapidAPI: {e}")
+        print(f"Error calling RapidAPI: {e}")
         return []
