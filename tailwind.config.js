@@ -17,9 +17,9 @@ module.exports = {
                 "display": ["Inter", "sans-serif"]
             },
             borderRadius: {
-                "DEFAULT": "0.5rem",
-                "lg": "1rem",
-                "xl": "1.5rem",
+                "DEFAULT": "1rem",
+                "lg": "2rem",
+                "xl": "3rem",
                 "full": "9999px"
             },
         },

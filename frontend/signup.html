@@ -53,9 +53,9 @@
                 </div>
                 <div class="flex flex-col gap-1.5">
                     <label class="text-slate-700 dark:text-slate-300 text-sm font-semibold ml-1">Password</label>
-                    <input id="password" required
+                    <input id="password" required minlength="6"
                         class="flex w-full rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 focus:border-primary focus:ring-1 focus:ring-primary h-12 px-4 text-slate-900 dark:text-slate-100 transition-all"
-                        placeholder="••••••••" type="password" />
+                        placeholder="Min. 6 characters" type="password" />
                 </div>
 
                 <div class="pt-6 pb-12">
@@ -63,6 +63,7 @@
                         class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
                         Create Account
                     </button>
+                    <div id="errorMsg" class="text-red-500 text-xs text-center mt-4 hidden"></div>
                     <p class="text-center text-xs text-slate-500 dark:text-slate-400 mt-4">
                         Already have an account? <a href="login.html" class="text-primary font-bold">Sign In</a>
                     </p>
@@ -76,8 +77,13 @@
         import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+        const signupForm = document.getElementById('signupForm');
+        const errorEl = document.getElementById('errorMsg');
+
+        signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            errorEl.classList.add('hidden');
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const name = document.getElementById('name').value;
@@ -87,6 +93,7 @@
                 const user = userCredential.user;
 
                 // Save profile to Firestore
+                console.log("Saving user profile to Firestore...");
                 await setDoc(doc(db, "users", user.uid), {
                     name: name,
                     email: email,
@@ -95,7 +102,9 @@
 
                 window.location.href = 'index.html';
             } catch (error) {
-                alert(error.message);
+                console.error("Signup Error Object:", error);
+                errorEl.innerText = error.message;
+                errorEl.classList.remove('hidden');
             }
         });
     </script>

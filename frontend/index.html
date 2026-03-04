@@ -25,76 +25,105 @@
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
-    <div
-        class="relative flex min-h-screen w-full flex-col max-w-[430px] mx-auto bg-background-light dark:bg-background-dark shadow-2xl">
-        <!-- Header -->
-        <header
-            class="sticky top-0 z-50 flex items-center bg-white p-4 justify-between border-b border-slate-100 dark:border-slate-800">
-            <div class="flex items-center gap-2">
-                <div class="size-8 bg-primary rounded-full flex items-center justify-center">
-                    <span class="material-symbols-outlined text-white text-lg">auto_awesome</span>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+    <!-- Sticky Navigation Bar -->
+    <nav
+        class="sticky top-0 z-50 w-full bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.reload()">
+                    <span class="material-symbols-outlined text-primary text-3xl">bolt</span>
+                    <span class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">InternAI</span>
                 </div>
-                <h1 class="text-slate-900 dark:text-slate-100 text-lg font-bold">AI Intern</h1>
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a class="text-sm font-semibold text-primary" href="index.html">Home</a>
+                    <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                        href="#">Internships</a>
+                    <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                        href="#">Tech News</a>
+                    <a class="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-primary transition-colors"
+                        href="bookmarks.html">Saved</a>
+                </div>
+                <!-- Action Button -->
+                <div class="flex items-center gap-4">
+                    <a href="post-internship.html"
+                        class="hidden sm:block text-slate-600 dark:text-slate-400 font-bold text-sm">Post Internship</a>
+                    <button id="authBtn"
+                        class="bg-primary text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-primary/90 transition-all shadow-md shadow-primary/20">
+                        Sign In
+                    </button>
+                </div>
             </div>
-            <button id="authBtn" class="text-primary font-semibold text-sm">Sign In</button>
-        </header>
-
-        <!-- Category Tabs -->
-        <div
-            class="flex bg-white dark:bg-slate-900 px-4 border-b border-slate-100 dark:border-slate-800 overflow-x-auto no-scrollbar">
-            <button
-                class="px-4 py-3 text-primary border-b-2 border-primary font-bold text-sm whitespace-nowrap">Home</button>
-            <button class="px-4 py-3 text-slate-500 font-semibold text-sm whitespace-nowrap">Internships</button>
-            <button class="px-4 py-3 text-slate-500 font-semibold text-sm whitespace-nowrap">Tech News</button>
         </div>
+    </nav>
 
-        <!-- Main Content -->
-        <main class="flex-1 overflow-y-auto pb-24 space-y-8 py-6">
-            <!-- Tech News Section -->
-            <section>
-                <div class="flex items-center justify-between px-6 mb-4">
-                    <h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold">Latest Tech News</h2>
-                    <button class="text-primary text-[10px] font-bold uppercase tracking-wider">See All</button>
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+        <!-- Latest Tech News Section -->
+        <section>
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Latest Tech News</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Stay updated with the latest in tech</p>
                 </div>
-                <div id="newsContainer" class="flex overflow-x-auto gap-4 px-6 pb-2 no-scrollbar snap-x snap-mandatory">
-                    <!-- Dynamic News Cards Loading Here -->
-                </div>
-            </section>
+                <a class="text-primary text-sm font-bold flex items-center gap-1 hover:underline" href="#">
+                    View all <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </a>
+            </div>
+            <div id="newsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Dynamic News Cards -->
+            </div>
+        </section>
 
-            <!-- Trending Internships Section -->
-            <section>
-                <div class="flex items-center justify-between px-6 mb-4">
-                    <h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold">Trending Internships</h2>
-                    <button class="text-primary text-[10px] font-bold uppercase tracking-wider">Explore</button>
+        <!-- Trending Internships Section -->
+        <section>
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Trending Internships
+                    </h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">AI-matched opportunities based on early
+                        industry trends</p>
                 </div>
-                <div id="internshipContainer"
-                    class="flex overflow-x-auto gap-4 px-6 pb-2 no-scrollbar snap-x snap-mandatory">
-                    <!-- Dynamic Internship Cards Loading Here -->
+                <div class="flex gap-3">
+                    <button
+                        class="size-10 flex items-center justify-center rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 transition-all shadow-sm">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    <button
+                        class="size-10 flex items-center justify-center rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 transition-all shadow-sm">
+                        <span class="material-symbols-outlined">chevron_right</span>
+                    </button>
                 </div>
-            </section>
-        </main>
+            </div>
+            <div id="internshipContainer" class="flex gap-8 overflow-x-auto hide-scrollbar pb-8 snap-x snap-mandatory">
+                <!-- Dynamic Internship Cards -->
+            </div>
+        </section>
+    </main>
 
-        <!-- Bottom Navigation Bar -->
-        <nav
-            class="fixed bottom-0 left-0 right-0 z-50 max-w-[430px] mx-auto bg-white border-t border-slate-100 dark:border-slate-800 px-6 py-4 flex items-center justify-between">
-            <a class="flex flex-col items-center gap-1 text-primary" href="index.html">
-                <span class="material-symbols-outlined fill-icon" style="font-variation-settings: 'FILL' 1;">home</span>
+    <!-- Mobile Navigation (Bottom Nav) -->
+    <div
+        class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 md:hidden z-50 px-4 pb-safe pt-2 shadow-2xl">
+        <div class="flex justify-around items-center h-16">
+            <a class="flex flex-col items-center gap-1 text-primary transition-all scale-110" href="index.html">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
                 <span class="text-[10px] font-bold">Home</span>
             </a>
             <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
                 <span class="material-symbols-outlined">work</span>
-                <span class="text-[10px] font-medium">Interns</span>
+                <span class="text-[10px] font-bold">Internships</span>
             </a>
-            <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
-                <span class="material-symbols-outlined">newspaper</span>
-                <span class="text-[10px] font-medium">News</span>
+            <a class="flex flex-col items-center gap-1 text-slate-400" href="bookmarks.html">
+                <span class="material-symbols-outlined">bookmark</span>
+                <span class="text-[10px] font-bold">Saved</span>
             </a>
             <a class="flex flex-col items-center gap-1 text-slate-400" href="#">
                 <span class="material-symbols-outlined">person</span>
-                <span class="text-[10px] font-medium">Profile</span>
+                <span class="text-[10px] font-bold">Profile</span>
             </a>
-        </nav>
+        </div>
     </div>
 
     <script type="module" src="/static/js/main.js"></script>

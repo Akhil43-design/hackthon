@@ -159,19 +159,34 @@ def get_recommendations():
 def get_news():
     news = [
         {
-            "title": "Quantum Computing Breakthrough",
-            "description": "Researchers achieve stable qubits at room temperature, paving the way for practical quantum systems.",
-            "link": "https://example.com/news1"
+            "title": "Generative AI: The 2024 Roadmap",
+            "description": "Exploring how LLMs are reshaping the modern developer workflow and what to expect in the coming months.",
+            "link": "https://techcrunch.com/category/artificial-intelligence/"
         },
         {
-            "title": "Green Energy in Tech",
-            "description": "Major tech companies commit to 100% renewable energy by 2030 in new sustainability pact.",
-            "link": "https://example.com/news2"
+            "title": "Quantum Supremacy Near?",
+            "description": "New breakthroughs in error correction bring us closer to practical quantum computing use cases in cryptography.",
+            "link": "https://www.wired.com/tag/quantum-computing/"
         },
         {
-            "title": "The Rise of Edge AI",
-            "description": "Why processing data at the edge is becoming critical for the next generation of IoT devices.",
-            "link": "https://example.com/news3"
+            "title": "The Hybrid Work Debate",
+            "description": "Top tech firms are re-evaluating their remote work policies for 2025, sparking new discussions on productivity.",
+            "link": "https://www.theverge.com/tech"
+        },
+        {
+            "title": "Technical Interview Tips",
+            "description": "How to master system design interviews at FAANG companies using the latest architectural patterns.",
+            "link": "https://medium.com/tag/software-engineering"
+        },
+        {
+            "title": "Edge Computing Explosion",
+            "description": "Why processing data at the edge is becoming critical for the next generation of smart IoT devices and cities.",
+            "link": "https://www.zdnet.com/topic/edge-computing/"
+        },
+        {
+            "title": "Web3 & The Future of ID",
+            "description": "Decentralized identity solutions are gaining traction as users demand more control over their personal data.",
+            "link": "https://cointelegraph.com/tags/web3"
         }
     ]
     return jsonify(news)
